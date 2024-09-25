@@ -111,7 +111,7 @@ export const checkSuccessTask = async (taskId: number): Promise<UserBasic | stri
         const response = await axios.post<UserBasic>(`${BASE_URL}task/checkSuccessTask`, {
             taskId
         }, {headers: {Authorization: `tma ${initDataRaw}`}});
-        console.log("response.data - ", response.data);
+        console.log("response.data checkSuccessTask - ", response.data);
         if ('message' in response.data) {
             return `${response.data.message}`; // Возвращаем сообщение об ошибке
         }

@@ -17,19 +17,19 @@ const CustomItem: React.FC<PropsCustom> = ({ item, sendToSelected }) => {
         );
 
         if (selectedItem) {
-            setSelectedCard(selectedItem.id);
+            setSelectedCard(selectedItem.customId);
         } else if (item.length > 0) {
             const firstItem = item.find(user => user.type === selectedType);
             if (firstItem) {
-                setSelectedCard(firstItem.id);
+                setSelectedCard(firstItem.customId);
             }
         }
     }, [item, selectedType]);
 
     const filteredItems = item.filter((items) => items.type === selectedType);
 
-    const handleCardClick = (id: number) => {
-        sendToSelected(id);
+    const handleCardClick = (customId: number) => {
+        sendToSelected(customId);
     };
 
     return (
@@ -60,13 +60,13 @@ const CustomItem: React.FC<PropsCustom> = ({ item, sendToSelected }) => {
             >
                 {filteredItems.map((items) => (
                     <div
-                        key={items.id}
-                        onClick={() => handleCardClick(items.id)}
+                        key={items.customId}
+                        onClick={() => handleCardClick(items.customId)}
                         style={{
                             width: 'calc(33.333% - 10px)', // Fixed width for each card to ensure 3 per row
                             boxSizing: 'border-box',
                             height: '150px', // Fixed height for each card
-                            border: items.id === selectedCard ? '3px solid #fff' : '2px solid gray',
+                            border: items.customId === selectedCard ? '3px solid #fff' : '2px solid gray',
                             borderRadius: '16px',
                             padding: '8px',
                             textAlign: 'center',

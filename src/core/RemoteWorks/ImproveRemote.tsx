@@ -28,10 +28,11 @@ export interface UsersImproveItem {
 }
 
 
-export const getImproveResultUserItem = async (): Promise<UsersImproveItem[] | string> => {
+export const getImproveResultUserItem = async (userCustomId: number): Promise<UsersImproveItem[] | string> => {2
     try {
-        const response = await axios.get<UsersImproveItem[]>(
-            `${BASE_URL}improve/getUserImproves`,
+    console.log("userCustomId - ", userCustomId)
+        const response = await axios.post<UsersImproveItem[]>(
+            `${BASE_URL}improve/getUserImproves`, {userCustomId: userCustomId},
             {headers: {Authorization: `tma ${initDataRaw}`}}
         );
 
@@ -54,11 +55,11 @@ interface ResponseUpLevelToItem {
     coins: number;
 }
 
-export const upLevelToItem = async (improveId: number) => {
+export const upLevelToItem = async (userCustomId: number, improveId: number) => {
     try {
         const response = await axios.post<ResponseUpLevelToItem>(
             `${BASE_URL}improve/upUserImproveLevel`,
-            {improveId: improveId},
+            {userCustomId: userCustomId, improveId: improveId},
             {headers: {Authorization: `tma ${initDataRaw}`}}
         );
         console.log('upLevelToItem is -', response.data)
@@ -85,7 +86,7 @@ export const upLevelToItem = async (improveId: number) => {
 
 
 export interface UserCustom {
-    id: number;
+    customId: number;
     name: string;
     price: PriceCustom;
     image: string;
@@ -159,12 +160,12 @@ export interface SubscriptionOptions {
 export const getPremiumItem = async () => {
     try {
         const response = await axios.get<SubscriptionOptions[]>(`${BASE_URL}prem/getListSubscriptionOptions`,
-            { headers: { Authorization: `tma ${initDataRaw}` } }
+            {headers: {Authorization: `tma ${initDataRaw}`}}
         );
 
         console.log("getPremiumItem - ", response);
 
-        if (typeof response.data == "object" ) {
+        if (typeof response.data == "object") {
             return response.data
         } else {
             return "Error: Unexpected response format";

@@ -20,8 +20,6 @@ export const QuestsScreen: React.FC = () => {
     const [selectedTask, setSelectedTask] = useState<UserTask | null>(null);
     const [visitTask, setVisitTask] = useState<boolean>(false);
 
-
-
     try {
         useTelegramBackButton(true)
     } catch (e) {
@@ -120,12 +118,26 @@ export const QuestsScreen: React.FC = () => {
             width: '100%',
             height: '100%',
             position: 'relative',
+            maxHeight: '100vh',
             background: '#131418',
-            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            overflow: 'hidden',
+            boxSizing: 'border-box',
+            justifyContent: 'space-between',
         }}>
+
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                // height: '100%',
+                overflowY: 'auto',
+            }}>
+
+
 
             <div style={{
                 width: 390,
@@ -185,46 +197,43 @@ export const QuestsScreen: React.FC = () => {
                 <HorizontalSelector tabs={["Task", "Quests", "Maker"]} onTabSelect={handleTabSelect}/>
 
                 {tabSelected === "Task" && (
-                        <div style={{
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            paddingRight: '16px',
-                            paddingLeft: '16px',
-                        }}>
-                            {dataApp.tasks.map((item) => {
+                    <div style={{
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        paddingRight: '16px',
+                        paddingLeft: '16px',
+                    }}>
+                        {dataApp.tasks.map((item) => {
 
 
-                                if (item.completed) {
-                                    return null;
-                                }
+                            if (item.completed) {
+                                return null;
+                            }
 
-                                return (
-                                    <ItemElementsImprove
-                                        key={item.taskId}
-                                        title={item.text}
-                                        handleClick={() => openBottomSheet(item)}
-                                        itemUpgrate={item.rewards ? item.rewards : null}
-                                        img={""}
-                                        onLoading={item.etaps === 1 || item.etaps === 3}
-                                    />
-                                    )
+                            return (
+                                <ItemElementsImprove
+                                    key={item.taskId}
+                                    title={item.text}
+                                    handleClick={() => openBottomSheet(item)}
+                                    itemUpgrate={item.rewards ? item.rewards : null}
+                                    img={""}
+                                    onLoading={item.etaps === 1 || item.etaps === 3}
+                                />
+                            )
 
-                            })}
-                        </div>
+                        })}
+                    </div>
                 )}
 
             </div>
-
+            </div>
 
             <div style={{
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
                 width: '100%',
-                zIndex: 3,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                background: '#131418',
             }}>
 
                 <div style={{height: '16px'}}/>
@@ -256,17 +265,18 @@ export const QuestsScreen: React.FC = () => {
                                           <ButtonMulti
                                               tx={visitTask ? taskStates[selectedTask.taskId]?.isLoading ? 'Checking' : 'Check Task' : 'Complete Task'}
                                               onClick={() => {
-                                                  if(visitTask) {
+                                                  if (visitTask) {
                                                       checkTask()
                                                   } else {
-                                                      if(selectedTask?.taskType != undefined) {
-                                                          if(isOpenUrlTask(selectedTask.taskType)){
+                                                      if (selectedTask?.taskType != undefined) {
+                                                          if (isOpenUrlTask(selectedTask.taskType)) {
                                                               OpenUrl(selectedTask.taskType.url)
                                                           }
                                                       }
                                                       setVisitTask(true)
                                                   }
-                                              }} bgClr={visitTask ? taskStates[selectedTask.taskId]?.isLoading ?'#252830' : "#F44C54": '#584CF4'}
+                                              }}
+                                              bgClr={visitTask ? taskStates[selectedTask.taskId]?.isLoading ? '#252830' : "#F44C54" : '#584CF4'}
                                               onLoading={taskStates[selectedTask.taskId]?.isLoading}/>
                                       </div>
                                   }

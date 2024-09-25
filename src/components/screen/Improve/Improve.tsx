@@ -82,6 +82,12 @@ export const ImproveScreen: React.FC = () => {
                     ...prevDataApp,
                     selectedModel: selectedItem
                 }));
+
+                    const result = await getImproveResultUserItem(id);
+                    if (typeof result == "object") {
+                        setItemImprove(result);
+                    }
+
             }
         } else {
             handleShowToast(response.toString(), 'error');
@@ -90,17 +96,23 @@ export const ImproveScreen: React.FC = () => {
     };
 
     const getImproveItem = async () => {
-        setLoading(true);
-        const result = await getImproveResultUserItem();
-        const customResult = await getUserCustom();
-        if (typeof result == "object") {
-            setItemImprove(result);
+            setLoading(true);
+            if (dataApp.selectedModel?.customId != null) {
+
+                const result = await getImproveResultUserItem(dataApp.selectedModel.customId);
+                const customResult = await getUserCustom();
+                if (typeof result == "object") {
+                    setItemImprove(result);
+                    if (typeof customResult == "object") {
+                        setCustomItem(customResult);
+                    }
+                }
+                setLoading(false);
+            } else {
+                showToast("id is null", "error")
+            }
         }
-        if (typeof customResult == "object") {
-            setCustomItem(customResult);
-        }
-        setLoading(false);
-    };
+    ;
 
     const getPrem = async () => {
         const result = await getPremiumItem()
@@ -111,8 +123,8 @@ export const ImproveScreen: React.FC = () => {
 
     const upLevelImprove = async () => {
         setLoading(true);
-        if (selectedImprove) {
-            const result = await upLevelToItem(selectedImprove.improveId);
+        if (selectedImprove && dataApp.selectedModel != null) {
+            const result = await upLevelToItem(dataApp.selectedModel?.customId, selectedImprove.improveId);
             if (typeof result == "object") {
                 setDataApp(prevDataApp => ({
                     ...prevDataApp,
@@ -161,7 +173,7 @@ export const ImproveScreen: React.FC = () => {
             const paidResult = await getPremiumUsers();
 
             if (typeof paidResult === "object" && paidResult !== null) {
-                const { endDateOfWork } = paidResult;
+                const {endDateOfWork} = paidResult;
 
                 if (endDateOfWork !== null) {
                     setDataApp(prevDataApp => ({

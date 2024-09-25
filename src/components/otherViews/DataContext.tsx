@@ -30,7 +30,7 @@ const initialUserBasic: UserBasic = {
     boosts: [],
     completedTasks: [],
     tasks: [],
-    perTap: 1
+    perTap: 1,
 };
 
 const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
