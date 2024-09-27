@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserCustom } from '../../../core/RemoteWorks/ImproveRemote';
 import SimpleHorizontalSelector from "../../otherViews/selectors/SimpleHorizontalSelector.tsx";
+import IcStars from "../../../assets/icon/ic_premium_star_simpl.svg"
 
 interface PropsCustom {
     item: UserCustom[];
@@ -98,7 +99,19 @@ const CustomItem: React.FC<PropsCustom> = ({ item, sendToSelected }) => {
                             background: '#252830',
                             borderRadius: '999px',
                             padding: '2px 10px',
+                            alignItems: 'center',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignContent: 'center',
+                            justifyContent:'center'
                         }}>
+                            {items.price.type === 'stars' && (
+                                <img src={IcStars} style={{
+                                    width: '12px',
+                                    height: '12px',
+                                    marginRight: '4px'
+                                }}/>
+                            )}
                             <p style={{ color: '#ffffff' }}>
                                 {items.price.type === 'free' ? 'free' : items.price.price}
                             </p>

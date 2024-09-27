@@ -258,7 +258,7 @@ export const FriendsScreen: React.FC = () => {
                     </div>
 
                     <ButtonRound img={IcCopy} onClick={() => {
-                        handleCopy(`t.me/TerminusCoinbot/Farm?startapp=${dataApp.codeToInvite}`)
+                        handleCopy(`t.me/TapFapCoinBot/Enjoy?startapp=${dataApp.codeToInvite}`)
                         handleShowToast("Success copy", "info")
                     }}/>
                     <div style={{width: '16px'}}/>

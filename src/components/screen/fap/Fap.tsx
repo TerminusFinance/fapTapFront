@@ -169,7 +169,7 @@ export const FapScreen: React.FC = () => {
             <div>
 
                 <img
-                    src={PunkModel}
+                    src={dataApp.selectedModel?.image ? dataApp.selectedModel?.image :PunkModel }
                     alt="Girl"
                     style={{
                         position: "absolute",

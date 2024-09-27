@@ -174,44 +174,54 @@ export const UserLigsScreen: React.FC = () => {
     return (
         <div style={{
             width: '100%',
-            height: '100vh',
+            height: '100%',
             position: 'relative',
+            maxHeight: '100vh',
             background: '#131418',
-            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            overflow: 'hidden',
+            boxSizing: 'border-box',
+            justifyContent: 'space-between',
         }}>
-            {loading || !user ? (
-                <div>Loading...</div>
-            ) : (
-                <>
-                    <div style={{ width: '100%' }}>
-                        <LevelSlider levels={levels} user={user} />
-                    </div>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                // height: '100%',
+                overflowY: 'auto',
+            }}>
+                {loading || !user ? (
+                    <div>Loading...</div>
+                ) : (
+                    <>
+                        <div style={{width: '100%'}}>
+                            <LevelSlider levels={levels} user={user}/>
+                        </div>
 
-                    <div style={{
-                        position: 'fixed',
-                        bottom: 0,
-                        left: 0,
-                        width: '100%',
-                        zIndex: 3,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}>
-                        <div style={{ height: '16px' }} />
-                        <NavigationBar
-                            initialSelected={""}
-                            onFriendsClick={() => handleNav("friends")}
-                            onFapClick={() => handleNav('fap')}
-                            onQuestClick={() => handleNav('quests')}
-                            onTopClick={() => handleNav('top')}
-                            onImproveClick={() => handleNav("improve")}
-                        />
-                    </div>
-                </>
-            )}
+                    </>
+                )}
+            </div>
+
+            <div style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                background: '#131418',
+            }}>
+                <div style={{height: '16px'}}/>
+                <NavigationBar
+                    initialSelected={""}
+                    onFriendsClick={() => handleNav("friends")}
+                    onFapClick={() => handleNav('fap')}
+                    onQuestClick={() => handleNav('quests')}
+                    onTopClick={() => handleNav('top')}
+                    onImproveClick={() => handleNav("improve")}
+                />
+            </div>
         </div>
     );
 };

@@ -36,7 +36,7 @@ export const useTelegramBackButton = (state: boolean) => {
 
 export const sendToTgChose = (shareUrl: string) => {
 
-    const shareMessage = `t.me/TerminusCoinbot/Farm?startapp=${shareUrl}
+    const shareMessage = `t.me/TapFapCoinBot/Enjoy?startapp=${shareUrl}
 ` +
         "\n" +
         "Play with me and get the opportunity to become a token holder through airdrop!\n" +

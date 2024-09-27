@@ -144,7 +144,21 @@ export const setToSelected = async (customId: number) => {
         return response.data;
 
     } catch (e) {
-        console.error('Error updating user:', e);
+        if (axios.isAxiosError(e)) {
+            if (e.response) {
+                // Сервер ответил с кодом статуса, который выходит за пределы 2xx
+                return `Error: ${e.response.data.message || e.response.statusText}`;
+            } else if (e.request) {
+                // Запрос был сделан, но ответа не было получено
+                return "Error: No response received from server";
+            } else {
+                // Произошла ошибка при настройке запроса
+                return `Error: ${e.message}`;
+            }
+        } else {
+            // Что-то еще произошло
+            return `Error: ${e}`;
+        }
         return `${e}`;
     }
 }
@@ -190,4 +204,6 @@ export const getPremiumItem = async () => {
         }
     }
 }
+
+
 

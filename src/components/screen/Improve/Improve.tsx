@@ -21,9 +21,9 @@ import IcEnergy from "../../../assets/icon/ic_battery.svg";
 import ProgressBar from "../../otherViews/progresBar/ProgressBar.tsx";
 import {useToast} from "../../otherViews/toast/ToastContext.tsx";
 import CustomItem from "./Custom.tsx";
-import {useTelegramBackButton} from "../../../core/Utils.ts";
+import {formatNumberToK, useTelegramBackButton} from "../../../core/Utils.ts";
 
-import {getPremiumUsers, subscribeToPremium} from "../../../core/RemoteWorks/PayRemote.tsx";
+import {buyCustomItem, getPremiumUsers, subscribeToPremium} from "../../../core/RemoteWorks/PayRemote.tsx";
 import {initInvoice} from "@telegram-apps/sdk";
 import {ButtonNext} from "../../otherViews/buttons/ButtonNext.tsx";
 import {ModalBuyPrem} from "../../modal/modalBuyPrem/ModalBuyPrem.tsx";
@@ -83,14 +83,31 @@ export const ImproveScreen: React.FC = () => {
                     selectedModel: selectedItem
                 }));
 
-                    const result = await getImproveResultUserItem(id);
-                    if (typeof result == "object") {
-                        setItemImprove(result);
-                    }
+                const result = await getImproveResultUserItem(id);
+                if (typeof result == "object") {
+                    setItemImprove(result);
+                }
 
             }
-        } else {
-            handleShowToast(response.toString(), 'error');
+        } else if (typeof response == "object") {
+            if (response.message == "Model not purchased and price is not free") {
+                const buyResult = await buyCustomItem(id)
+                if (typeof buyResult == "object") {
+                    if (buyResult.ok) {
+                        invoice
+                            .open(buyResult.result, 'url')
+                            .then((status) => {
+
+                                if (status == "paid") {
+                                    ProcessingPaidResult()
+                                }
+                                return console.log(status);
+                            });
+                    }
+                } else {
+                    handleShowToast(buyResult.toString(), 'error');
+                }
+            }
         }
         setLoading(false);
     };
@@ -233,7 +250,7 @@ export const ImproveScreen: React.FC = () => {
                     flexDirection: 'column',
                 }}>
                     <span style={{fontSize: '14px', fontFamily: 'UbuntuMedium', color: 'white'}}>Details</span>
-                    <ItemImproveUp name="Balance" img={IcCoins} valueUp={dataApp.coins.toString()}/>
+                    <ItemImproveUp name="Balance" img={IcCoins} valueUp={formatNumberToK(dataApp.coins)}/>
                     <ItemImproveUp name="Per Tap" img={IcCoins} valueUp={dataApp.perTap.toString()}/>
                     <ItemImproveUp name="Energy" img={IcEnergy} valueUp={dataApp.maxEnergy.toString()}/>
                 </div>
@@ -268,7 +285,7 @@ export const ImproveScreen: React.FC = () => {
                 {tabSelected === "Premium" && (
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(2, 1fr)', // Two items per row
+                        gridTemplateColumns: 'repeat(2, 1fr)',
                         gap: '16px', // Space between items
                         padding: '10px',
                     }}>

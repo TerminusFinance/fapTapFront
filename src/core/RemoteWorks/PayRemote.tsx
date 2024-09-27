@@ -24,6 +24,41 @@ export const subscribeToPremium = async (subscriptionOptions: SubscriptionOption
 }
 
 
+export const buyCustomItem = async(customId: number) => {
+    try {
+        const response = await axios.post<SubscribeResult>(
+            `${BASE_URL}custom/buyCustom`,
+            {customId: customId},
+            {headers: {Authorization: `tma ${initDataRaw}`}});
+        console.log("buyCustomItem response - ", response.data);
+
+        if (typeof response.data == "object") {
+            return response.data
+        } else {
+            return "Error request"
+        }
+
+    } catch (e) {
+        if (axios.isAxiosError(e)) {
+            if (e.response) {
+                // Сервер ответил с кодом статуса, который выходит за пределы 2xx
+                return `Error: ${e.response.data.message || e.response.statusText}`;
+            } else if (e.request) {
+                // Запрос был сделан, но ответа не было получено
+                return "Error: No response received from server";
+            } else {
+                // Произошла ошибка при настройке запроса
+                return `Error: ${e.message}`;
+            }
+        } else {
+            // Что-то еще произошло
+            return `Error: ${e}`;
+        }
+        return `${e}`;
+    }
+}
+
+
 export interface PremiumItem {
     amountSpent: number;
     endDateOfWork?: string | null;

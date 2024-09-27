@@ -82,7 +82,11 @@ export const QuestsScreen: React.FC = () => {
                 updateTaskState(SselectedTask.taskId, {isLoading: true});
                 const requestToCheck = await checkSuccessTask(SselectedTask.taskId)
                 if (typeof requestToCheck === 'object') {
-                    setDataApp(requestToCheck);
+                    setDataApp(prevState =>({
+                        ...prevState,
+                        tasks: requestToCheck.tasks
+                    }))
+                    // setDataApp(requestToCheck);
                     if (IsStockReg(SselectedTask.taskType)) {
                         if (SselectedTask.etaps == 0 || SselectedTask.etaps == 2) {
                             handleShowToast("Your task has been sent for verification", 'info')
@@ -111,7 +115,6 @@ export const QuestsScreen: React.FC = () => {
 
         }
     }
-
 
     return (
         <div style={{

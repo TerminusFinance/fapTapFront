@@ -151,7 +151,7 @@ export const ItemUpgrade: React.FC<ItemUpgradeParam> = ({img, name}) => {
             <span style={{
                 color: '#B5B7B9',
                 fontFamily: 'UbuntuRegular',
-                fontSize: '14px',
+                fontSize: '12px',
                 margin: '4px 8px'
             }}>
                 {name}

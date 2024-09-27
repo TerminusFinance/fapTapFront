@@ -31,38 +31,46 @@ export const ImproveList: React.FC<ImproveListParam> = ({ improveResultUserItem,
     return (
         <div
             style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                background: "#131418",
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%', // Full height of parent component
+                padding: '10px',
             }}
         >
 
             {/* Отображение категорий и элементов */}
-            {Object.entries(categories).map(([category, items]) => (
-                <div
-                    key={category}
-                    style={{
-                        width: "100%",
-                        padding: "16px"
-                    }}
-                >
-                    <BeginningCategory tx={category} />
-                    {items.map((item) => (
-                        <ItemElementsImprove
-                            key={item.improveId}
-                            title={item.name}
-                            price={item.price * item.level}
-                            handleClick={() => {onItemClick(item)}}
-                            itemUpgrate={item.rewards}
-                         img={""}/>
-                    ))}
-                </div>
-            ))}
+            <div
+                style={{
+                    flexGrow: 1, // Use available space
+                    overflowY: 'auto', // Enable scrolling only when needed
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '10px',
+                    paddingBottom: '10px', // Extra bottom padding for smoother scroll
+                }}
+            >
+                {Object.entries(categories).map(([category, items]) => (
+                    <div
+                        key={category}
+                        style={{
+                            flexGrow: 1, // Use available space
+                            width: "100%",
+                            paddingTop: '8px',
+                        }}
+                    >
+                        <BeginningCategory tx={category} />
+                        {items.map((item) => (
+                            <ItemElementsImprove
+                                key={item.improveId}
+                                title={item.name}
+                                price={item.price * item.level}
+                                handleClick={() => {onItemClick(item)}}
+                                itemUpgrate={item.rewards}
+                                img={item.image}/>
+                        ))}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
