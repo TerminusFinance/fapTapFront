@@ -1,25 +1,57 @@
-import React, {} from 'react';
+import React, {useState} from 'react';
 import LogoModel from "../../../assets/logo/logo_model_start_4x.png";
 import {ButtonMain} from "../../otherViews/buttons/ButtonMain.tsx";
-import {useNavigate} from "react-router-dom";
-import {createUser} from "../../../core/RemoteWorks/UsersRemote.tsx";
+import {useLocation, useNavigate} from "react-router-dom";
+import {createUser, processInvitationFromInviteCode} from "../../../core/RemoteWorks/UsersRemote.tsx";
 import {useData} from "../../otherViews/DataContext.tsx";
+import {useTelegramBackButton} from "../../../core/Utils.ts";
+import {useToast} from "../../otherViews/toast/ToastContext.tsx";
+// import {useTranslation} from "react-i18next";
+import ProgressBar from "../../otherViews/progresBar/ProgressBar.tsx";
 
 export const FirstStartScreen: React.FC = () => {
     const navigate = useNavigate();
-    const {setDataApp} = useData();
-    // const handleNav = (marsh: string) => {
-    //
-    //     navigate(`/${marsh}`);
-    //
-    // };
 
-    const createUserForStart = async () => {
-        const result = await createUser(0);
-        console.log("result", result);
-        setDataApp(result)
-        navigate('/fap');
+    try {
+        useTelegramBackButton(false)
+    } catch (e ) {
+        console.log("error in postEvent - ", e)
     }
+    const {showToast} = useToast();
+    const handleShowToast = (message: string, type: 'success' | 'error' | 'info') => {
+        showToast(message, type);
+    };
+
+
+    const location = useLocation()
+    const {inviteCode} = location.state as { inviteCode: string | null }
+    const {setDataApp} = useData();
+    // const { t } = useTranslation();
+    const [loading, setLoading] = useState(false);
+
+    const goToAbout = async () => {
+        try {
+            setLoading(true)
+            if (inviteCode == null) {
+                const result = await createUser(0);
+                console.log("result", result);
+                setDataApp(result)
+                navigate('/fap');
+            } else {
+                console.log("StartSCREEN - InviteCode - ", inviteCode)
+                const result = await processInvitationFromInviteCode(inviteCode);
+                if(typeof result === 'object') {
+                    console.log("result", result);
+                    setDataApp(result)
+                    navigate('/fap');
+                }
+            }
+        } catch (error) {
+            setLoading(false)
+            handleShowToast(`an error has occurred - ${error}`, 'error')
+            console.error("Error in goToAbout:", error);
+        }
+    };
 
     return (
         <div style={{
@@ -95,9 +127,9 @@ export const FirstStartScreen: React.FC = () => {
                 width: '100%',
                 boxSizing: 'border-box' // Учитываем padding в ширине
             }}>
-                <ButtonMain tx={"Get Started"} onClick={() =>createUserForStart()}/>
+                <ButtonMain tx={"Get Started"} onClick={() =>goToAbout()}/>
             </div>
-
+            {loading && <ProgressBar/>}
         </div>
     );
 };

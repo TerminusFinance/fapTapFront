@@ -6,9 +6,10 @@ import IcStars from "../../../assets/icon/ic_premium_star_simpl.svg"
 interface PropsCustom {
     item: UserCustom[];
     sendToSelected: (id: number) => void;
+    openModalCustomItem: (item: UserCustom) => void
 }
 
-const CustomItem: React.FC<PropsCustom> = ({ item, sendToSelected }) => {
+const CustomItem: React.FC<PropsCustom> = ({ item, openModalCustomItem }) => {
     const [selectedCard, setSelectedCard] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<string>('model');
 
@@ -29,8 +30,8 @@ const CustomItem: React.FC<PropsCustom> = ({ item, sendToSelected }) => {
 
     const filteredItems = item.filter((items) => items.type === selectedType);
 
-    const handleCardClick = (customId: number) => {
-        sendToSelected(customId);
+    const handleCardClick = (customId: UserCustom) => {
+        openModalCustomItem(customId);
     };
 
     return (
@@ -62,7 +63,7 @@ const CustomItem: React.FC<PropsCustom> = ({ item, sendToSelected }) => {
                 {filteredItems.map((items) => (
                     <div
                         key={items.customId}
-                        onClick={() => handleCardClick(items.customId)}
+                        onClick={() => handleCardClick(items)}
                         style={{
                             width: 'calc(33.333% - 10px)', // Fixed width for each card to ensure 3 per row
                             boxSizing: 'border-box',

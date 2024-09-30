@@ -31,6 +31,8 @@ const initialUserBasic: UserBasic = {
     completedTasks: [],
     tasks: [],
     perTap: 1,
+    enabledAirDrop: 0,
+    antiBotChecker: 0,
 };
 
 const DataProvider: React.FC<DataProviderProps> = ({ children }) => {

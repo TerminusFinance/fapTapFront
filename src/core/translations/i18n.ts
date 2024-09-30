@@ -3,7 +3,6 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './json/en.json';
 import ru from './json/ru.json';
-import es from './json/es.json';
 
 export const saveLanguageState = (languageState: string) => {
     try {
@@ -30,7 +29,6 @@ export const getLanguageState = (): string | null => {
 const resources = {
     en: { translation: en },
     ru: { translation: ru },
-    es: { translation: es }
 };
 
 const getLocales = (): string => {

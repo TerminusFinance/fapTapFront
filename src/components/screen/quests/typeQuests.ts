@@ -55,6 +55,10 @@ export const IsDaysChallengeTask = (taskType: TaskType): taskType is DaysChallen
     return taskType.type === 'DaysChallenge';
 }
 
+export const IsSampleTask = (taskType: TaskType): taskType is SampleTask => {
+    return taskType.type === 'Sample';
+}
+
 export interface SampleTask {
     type: 'Sample';
 }

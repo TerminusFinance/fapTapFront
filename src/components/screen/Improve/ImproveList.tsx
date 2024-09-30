@@ -63,6 +63,7 @@ export const ImproveList: React.FC<ImproveListParam> = ({ improveResultUserItem,
                             <ItemElementsImprove
                                 key={item.improveId}
                                 title={item.name}
+                                level={item.level}
                                 price={item.price * item.level}
                                 handleClick={() => {onItemClick(item)}}
                                 itemUpgrate={item.rewards}

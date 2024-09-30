@@ -8,6 +8,7 @@ import IcLoading from "../../../assets/icon/ic_loading.svg"
 interface ItemElementsImproveParam {
     title: string;
     img: string;
+    level: number;
     price?: number;
     handleClick: () => void;
     itemUpgrate?: Rewards[] | null;
@@ -20,6 +21,7 @@ export const ItemElementsImprove: React.FC<ItemElementsImproveParam> = ({
                                                                             price,
                                                                             handleClick,
                                                                             itemUpgrate,
+                                                                            level,
                                                                             onLoading
                                                                         }) => {
     console.log("onLoading is = ",onLoading)
@@ -53,15 +55,40 @@ export const ItemElementsImprove: React.FC<ItemElementsImproveParam> = ({
                         gap: '10px'
                     }}
                 >
-                    <img
-                        src={img}
-                        style={{
-                            width: '56px',
-                            height: '56px',
-                            border: "1.5px solid white",
-                            borderRadius: '999px'
-                        }}
-                    />
+                    <div style={{position: 'relative', display: 'inline-block'}}>
+                        <img
+                            src={img}
+                            style={{
+                                width: '56px',
+                                height: '56px',
+                                border: '1.5px solid white',
+                                borderRadius: '999px',
+                                filter: level > 1 ? 'blur(4px)' : 'none', // Размытие, если уровень больше 1
+                                opacity: level > 1 ? 0.7 : 1, // Легкая прозрачность при размытии
+                            }}
+                        />
+                        {level > 1 && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: '16px',
+                                    textShadow: '0px 0px 5px black', // Тень для улучшения читабельности текста
+                                }}
+                            >
+                                {`${level}`}
+                            </div>
+                        )}
+                    </div>
+
                     <div
                         style={{
                             display: 'flex',

@@ -1,6 +1,6 @@
 import axios, {} from 'axios';
 import {BASE_URL, initDataRaw} from "./RemoteConstant.ts";
-import {Rewards, UserCustom} from "./ImproveRemote.tsx";
+import {getSelectedModelsForUser, Rewards} from "./ImproveRemote.tsx";
 import {TaskType} from "../../components/screen/quests/typeQuests.ts";
 import { getUserStatisticsResponse } from './UserLigsremote.tsx';
 
@@ -22,8 +22,10 @@ export interface UserTask {
     actionBtnTx?: string | null;
     txDescription?: string | null;
     etaps?: number | null;
+    sortLocal?: string | null;
     dataSendCheck?: string | null;
     rewards? : Rewards[] | null;
+
 }
 
 
@@ -44,10 +46,12 @@ export interface UserBasic {
     completedTasks: number[] | null;
     tasks: UserTask[];
     imageAvatar?: string | null;
+    enabledAirDrop: number;
+    antiBotChecker: number;
     currentEnergy: number,
     maxEnergy: number,
     perTap: number;
-    selectedModel?: UserCustom | null;
+    selectedModel?: getSelectedModelsForUser | null;
     ligsUser?: getUserStatisticsResponse | null
 }
 
@@ -120,3 +124,24 @@ export const checkSuccessTask = async (taskId: number): Promise<UserBasic | stri
         return `error ${e}`
     }
 }
+
+export const processInvitationFromInviteCode = async (inviteCode: string): Promise<UserBasic | string> => {
+    try {
+        await axios.post<{
+            result: UserBasic
+        }>(`${BASE_URL}users/processInvitation`,
+            {inviteCode,}, {headers: {Authorization: `tma ${initDataRaw}`}}
+        );
+
+        const userResult = await getUserById()
+        return userResult;
+    } catch (error) {
+        console.error('Error processing invitation:', error);
+        console.error('Error getting user:', error);
+        if (axios.isAxiosError(error) && error.response) {
+            console.log('Axios error response data:', error.response.data);
+            return "User not found"
+        }
+        throw error;
+    }
+};

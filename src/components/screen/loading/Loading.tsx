@@ -1,44 +1,116 @@
 import React, {useEffect, useState} from 'react';
 import LogoModel from "../../../assets/logo/logo_model_start_4x.png";
-import { useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {LineProgressBar} from "../../otherViews/progresBar/LineProgresBar.tsx";
 import {getUserById} from "../../../core/RemoteWorks/UsersRemote.tsx";
 import {useData} from "../../otherViews/DataContext.tsx";
 import {useTranslation} from "react-i18next";
+import {retrieveLaunchParams} from "@telegram-apps/sdk";
+import {useTelegramBackButton} from "../../../core/Utils.ts";
 
 export const LoadingScreen: React.FC = () => {
-    const [progress, setProgress] = useState(0);
+    const { search } = useLocation();
     const navigate = useNavigate();
-    const {setDataApp} = useData();
+    const params = new URLSearchParams(search);
+    const inviteCode = params.get('inviteCode');
+
+    // const [data, setData] = useState<UserData | null>(null);
+    const { setDataApp } = useData();
+
+
+    const [progress, setProgress] = useState(0);
+    try {
+        useTelegramBackButton(false);
+    } catch (e) {
+        console.log("error in postEvent - ", e);
+    }
 
     const { t } = useTranslation();
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setProgress((prev) => (prev < 100 ? prev + 1 : 100));
-
-        }, 30);
-
-        return () => clearInterval(interval);
-    }, []);
-
-
-
-    useEffect(() => {
         const fetchData = async () => {
-            const result = await getUserById();
-            console.log("result get - result",result)
-            if (typeof result ==="string") {
-                    console.log('User not found');
-                    navigate('/start');
-            } else if (typeof result === 'object'){
-                console.log("set up data - ", result.coins);
-                setDataApp(result);
-                navigate('/fap');
+            try {
+                setProgress(20)
+
+                try {
+                    const { initData } = retrieveLaunchParams();
+                    const InitDataStaertParam = initData?.startParam
+                    if(params != undefined) {
+                        if(InitDataStaertParam != undefined) {
+                            setProgress(50)
+                            const InviteCodeParams = inviteCode != null ? inviteCode : InitDataStaertParam
+                            const result = await getUserById();
+                            setProgress(70)
+                            if (typeof result ==="string") {
+                                console.log("передал в  InitDataStaertParam параметр - ", InitDataStaertParam)
+                                setProgress(100)
+                                navigate('/start', {state: {inviteCode: InviteCodeParams}});
+                            } else if (typeof result === 'object'){
+                                setProgress(50)
+                                const isClanInvite = InviteCodeParams.startsWith('CL');
+                                console.log("isClanInvite - ", isClanInvite, "InviteCodeParams -", InviteCodeParams)
+                                setDataApp(result);
+                                setProgress(100)
+                                if(isClanInvite) {
+                                    const inviteCode = InviteCodeParams
+                                    setProgress(100)
+                                    navigate('/fap', { state: { inviteCode } });
+                                } else  {
+                                    navigate('/fap');
+                                }
+                            }
+                        } else  {
+                            setProgress(50)
+                            const result = await getUserById();
+                            if (typeof result ==="string") {
+                                if(!inviteCode) {
+                                    setProgress(100)
+                                    console.log('User not found');
+                                    navigate('/start', {state: {inviteCode: null}})
+                                } else  {
+                                    console.log('User not found');
+                                    navigate('/start', {state: {inviteCode}});
+                                }
+                            } else if (typeof result === 'object'){
+                                console.log("set up data - ", result.coins);
+                                setDataApp(result);
+                                navigate('/fap');
+                            }
+                        }
+
+                    } else {
+                        if(InitDataStaertParam != undefined) {
+                            setProgress(50)
+                            const InviteCodeParams = inviteCode != null ? inviteCode : InitDataStaertParam
+                            const result = await getUserById();
+
+                            setProgress(100)
+                            if (typeof result ==="string") {
+                                console.log('User not found');
+                                navigate('/start', {state: {InviteCodeParams}});
+
+                            } else if (typeof result === 'object'){
+                                console.log("set up data - ", result.coins);
+
+                                setDataApp(result);
+                                navigate('/fap');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.log(e)
+                    navigate('/not-found', {});
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
             }
-        }
-        fetchData()
-    }, []);
+        };
+        //
+        fetchData();
+        // navigate('/check');
+
+    }, [navigate])
 
     return (
         <div style={{
@@ -119,7 +191,7 @@ export const LoadingScreen: React.FC = () => {
                 }}>{t('loading.loading')}
                 </span>
 
-                <LineProgressBar progress={progress} height={8}/>
+                <LineProgressBar progress={progress} height={8} maxValue={100}/>
             </div>
         </div>
     );

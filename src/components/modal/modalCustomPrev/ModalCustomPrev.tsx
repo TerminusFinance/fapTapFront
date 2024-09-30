@@ -1,37 +1,28 @@
 import React, {useEffect, useRef, useState} from "react";
+import {ButtonMain} from "../../otherViews/buttons/ButtonMain.tsx";
+// import {ButtonSecond} from "../../otherViews/buttons/ButtonSecond.tsx";
 import {ButtonClose} from "../../otherViews/buttons/ButtonClose.tsx";
-import {Rewards} from "../../../core/RemoteWorks/ImproveRemote.tsx";
-import { ButtonMain } from "../../otherViews/buttons/ButtonMain.tsx";
-import {ItemUpgrade} from "../../otherViews/itemElements/ItemElementsImprove.tsx";
+import {UserCustom} from "../../../core/RemoteWorks/ImproveRemote.tsx";
 
-interface ModalImproveItemProps {
+interface ModalCustomPrevParam {
     isVisible: boolean;
     onClose: () => void;
-    img: string;
-    title: string;
-    price: number;
-    description: string;
-    rewards: Rewards[]
-    onClick: () => void;
+    onSelectClick: () => void;
+    custom: UserCustom;
 }
 
-export const ModalImproveItem: React.FC<ModalImproveItemProps> = ({
-                                                                      isVisible,
-                                                                      onClose,
-                                                                      img,
-                                                                      title,
-                                                                      price,
-                                                                      description,
-                                                                      rewards,
-                                                                      onClick,
-                                                                  }) => {
-
+export const ModalCustomPrev: React.FC<ModalCustomPrevParam> = ({
+                                                                    isVisible,
+                                                                    onClose,
+                                                                    onSelectClick,
+                                                                    custom
+                                                                }) => {
     const overlayRef = useRef<HTMLDivElement>(null);
     const sheetRef = useRef<HTMLDivElement>(null);
     const [isAnimating, setIsAnimating] = useState(false);
 
 
-    useEffect(() => { 
+    useEffect(() => {
         if (isVisible) {
             setIsAnimating(true);
             if (overlayRef.current && sheetRef.current) {
@@ -138,10 +129,13 @@ export const ModalImproveItem: React.FC<ModalImproveItemProps> = ({
                     }}
                 >
                     <img
-                        src={img}
+                        src={custom.image}
                         style={{
-                            width: "80px",
-                            height: "80px",
+                            width: "100%",
+                            maxHeight: "400px",
+                            objectFit: 'contain',
+                            display: 'block',
+                            margin: '0 auto'
                         }}
                     />
 
@@ -154,7 +148,7 @@ export const ModalImproveItem: React.FC<ModalImproveItemProps> = ({
                             marginTop: '8px'
                         }}
                     >
-                        {title}
+                        {custom.name}
                     </p>
 
                     <p
@@ -166,39 +160,23 @@ export const ModalImproveItem: React.FC<ModalImproveItemProps> = ({
                             marginTop: '8px'
                         }}
                     >
-                        {description}
+                        {custom.description}
                     </p>
 
-
-                        
-                        <div style={{
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            paddingRight: '16px',
-                            paddingLeft: '16px',
-                            marginBottom: '8px',
-                            marginTop: '8px',
-                            alignItems: 'center',
-                            alignContent: 'center',
+                    <div
+                        style={{
+                            marginTop: "32px",
                             display: 'flex',
-                            flexDirection: 'column'
-                        }}>
-
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'row'
-                            }}>
-
-                                {rewards?.slice(0, 2).map((item) => (
-                                    <ItemUpgrade name={item.name} img={item.img}/>
-                                ))}
-                            </div>
-
-                        <ButtonMain onClick={onClick} tx={`Buy (${price})`}/>
-                        </div>
-            
+                            flexDirection: 'row',
+                            width: '100%',
+                            gap: '8px'
+                        }}
+                    >
+                        {/*<ButtonSecond tx={"Close"} onClick={onClose}/>*/}
+                        <ButtonMain tx={custom.isPurchased == 1 ? "Select": "Buy"} onClick={onSelectClick} onRed={false}/>
+                    </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

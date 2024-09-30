@@ -27,14 +27,17 @@ import {buyCustomItem, getPremiumUsers, subscribeToPremium} from "../../../core/
 import {initInvoice} from "@telegram-apps/sdk";
 import {ButtonNext} from "../../otherViews/buttons/ButtonNext.tsx";
 import {ModalBuyPrem} from "../../modal/modalBuyPrem/ModalBuyPrem.tsx";
+import {ModalCustomPrev} from "../../modal/modalCustomPrev/ModalCustomPrev.tsx";
 
 export const ImproveScreen: React.FC = () => {
     const {dataApp, setDataApp} = useData();
     const [tabSelected, setTabSelected] = useState<string>("Improve");
     const [selectedImprove, setSelectedImprove] = useState<UsersImproveItem | null>(null);
+    const [selectedCustom, setSelectedCustom] = useState<UserCustom | null>(null);
     const [itemImprove, setItemImprove] = useState<UsersImproveItem[]>([]);
     const [customItem, setCustomItem] = useState<UserCustom[]>([]);
     const [isModalImproveItemVisible, setIsModalImproveItemVisible] = useState(false);
+    const [isModalCustomItemVisible, setIsModalCustomItemVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const {showToast} = useToast();
     const invoice = initInvoice();
@@ -55,12 +58,18 @@ export const ImproveScreen: React.FC = () => {
 
     const onCloseModal = () => {
         setIsModalImproveItemVisible(false);
+        setIsModalCustomItemVisible(false)
     };
 
     const openModalImproveItem = (item: UsersImproveItem) => {
         setSelectedImprove(item);
         setIsModalImproveItemVisible(true);
     };
+
+    const openModalCustom = (custom: UserCustom) => {
+        setSelectedCustom(custom)
+        setIsModalCustomItemVisible(true)
+    }
 
     const handleTabSelect = (selectedTab: string) => {
         setTabSelected(selectedTab);
@@ -71,52 +80,80 @@ export const ImproveScreen: React.FC = () => {
         navigate(`/${marsh}`);
     };
 
-    const sendToSelected = async (id: number) => {
-        setLoading(true);
-        const response = await setToSelected(id);
-        if (Array.isArray(response)) {
-            setCustomItem(response);
-            const selectedItem = response.find(item => item.isSelected === 1);
-            if (selectedItem) {
-                setDataApp(prevDataApp => ({
-                    ...prevDataApp,
-                    selectedModel: selectedItem
-                }));
+    const sendToSelected = async () => {
+        if(selectedCustom) {
+            const id = selectedCustom.customId
 
-                const result = await getImproveResultUserItem(id);
-                if (typeof result == "object") {
-                    setItemImprove(result);
-                }
+            setLoading(true);
+            const response = await setToSelected(id);
+            if (Array.isArray(response)) {
+                setCustomItem(response);
+                console.log("response is setToSelected",response)
+                const selectedItem = response.find(item => item.customId === id);
+                console.log("selectedItem is setToSelected",selectedItem)
+                if (selectedItem) {
+                    setDataApp(prevDataApp => {
+                        const { selectedModel } = prevDataApp; // Destructure selectedModel for easier access
 
-            }
-        } else if (typeof response == "object") {
-            if (response.message == "Model not purchased and price is not free") {
-                const buyResult = await buyCustomItem(id)
-                if (typeof buyResult == "object") {
-                    if (buyResult.ok) {
-                        invoice
-                            .open(buyResult.result, 'url')
-                            .then((status) => {
-
-                                if (status == "paid") {
-                                    ProcessingPaidResult()
+                        if (selectedItem.type === 'model' && selectedModel != null) {
+                            return {
+                                ...prevDataApp,
+                                selectedModel: {
+                                    ...selectedModel,
+                                    model: selectedItem, // Update the model
+                                    appartment: selectedModel.appartment ,
                                 }
-                                return console.log(status);
-                            });
+                            };
+                        } else if (selectedItem.type === 'appartment' && selectedModel != null) { // Ensure you use 'appartment' here if that's the defined name
+                            return {
+                                ...prevDataApp,
+                                selectedModel: {
+                                    ...selectedModel,
+                                    appartment: selectedItem,
+                                    model: selectedModel?.model ,
+                                }
+                            };
+                        }
+                        return prevDataApp; // Return unchanged if neither type matches
+                    });
+
+                    const result = await getImproveResultUserItem(id);
+                    if (typeof result == "object") {
+                        setItemImprove(result);
                     }
-                } else {
-                    handleShowToast(buyResult.toString(), 'error');
+
+                }
+            } else if (typeof response == "object") {
+                if (response.message == "Model not purchased and price is not free") {
+                    const buyResult = await buyCustomItem(id)
+                    if (typeof buyResult == "object") {
+                        if (buyResult.ok) {
+                            invoice
+                                .open(buyResult.result, 'url')
+                                .then((status) => {
+
+                                    if (status == "paid") {
+                                        ProcessingPaidResult()
+                                    }
+                                    return console.log(status);
+                                });
+                        }
+                    } else {
+                        handleShowToast(buyResult.toString(), 'error');
+                    }
                 }
             }
+            setLoading(false);
+            onCloseModal()
         }
-        setLoading(false);
     };
 
     const getImproveItem = async () => {
             setLoading(true);
-            if (dataApp.selectedModel?.customId != null) {
 
-                const result = await getImproveResultUserItem(dataApp.selectedModel.customId);
+            if (dataApp.selectedModel?.model.customId != null) {
+
+                const result = await getImproveResultUserItem(dataApp.selectedModel.model.customId);
                 const customResult = await getUserCustom();
                 if (typeof result == "object") {
                     setItemImprove(result);
@@ -141,7 +178,7 @@ export const ImproveScreen: React.FC = () => {
     const upLevelImprove = async () => {
         setLoading(true);
         if (selectedImprove && dataApp.selectedModel != null) {
-            const result = await upLevelToItem(dataApp.selectedModel?.customId, selectedImprove.improveId);
+            const result = await upLevelToItem(dataApp.selectedModel?.model.customId, selectedImprove.improveId);
             if (typeof result == "object") {
                 setDataApp(prevDataApp => ({
                     ...prevDataApp,
@@ -238,7 +275,7 @@ export const ImproveScreen: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'row',
             }}>
-                <img src={dataApp.selectedModel?.image} style={{height: '250px'}}/>
+                <img src={dataApp.selectedModel?.model.image} style={{height: '250px'}}/>
                 <div style={{
                     width: '100%',
                     height: '50%',
@@ -279,7 +316,7 @@ export const ImproveScreen: React.FC = () => {
                     <ImproveList improveResultUserItem={itemImprove} onItemClick={openModalImproveItem}/>
                 )}
                 {tabSelected === "Custom" && (
-                    <CustomItem item={customItem} sendToSelected={sendToSelected}/>
+                    <CustomItem item={customItem} sendToSelected={sendToSelected} openModalCustomItem={openModalCustom}/>
                 )}
 
                 {tabSelected === "Premium" && (
@@ -325,11 +362,18 @@ export const ImproveScreen: React.FC = () => {
                     onClose={onCloseModal}
                     img={selectedImprove?.image}
                     title={selectedImprove?.name}
+                    price={selectedImprove?.price}
                     description={selectedImprove.name}
                     rewards={selectedImprove?.rewards}
                     onClick={upLevelImprove}
                 />
             )}
+
+            {selectedCustom && (
+                <ModalCustomPrev custom={selectedCustom} isVisible={isModalCustomItemVisible}  onClose={onCloseModal} onSelectClick={sendToSelected}/>
+            )}
+
+            {/*{selectCus}*/}
 
 
             <ModalBuyPrem isVisible={isBottomSheetVisible} onClose={closeBottomSheet} onBuy={buyPrem}/>

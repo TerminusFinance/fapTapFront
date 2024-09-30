@@ -13,6 +13,7 @@ import {initSwipeBehavior, postEvent} from "@telegram-apps/sdk";
 import { UserLigsScreen } from './components/screen/userLigs/UserLigs.tsx';
 import { FriendsScreen } from './components/screen/friends/Friends.tsx';
 import {TopScreen} from "./components/screen/top/Top.tsx";
+import AirDrop from "./components/screen/airDrop/AirDrop.tsx";
 const App: React.FC = () => {
 
 
@@ -46,6 +47,7 @@ const App: React.FC = () => {
                             <Route path="/userLigs" element={<UserLigsScreen/>}/>
                             <Route path="/friends" element={<FriendsScreen/>}/>
                             <Route path="/top" element={<TopScreen/>}/>
+                            <Route path="/airDrop" element={<AirDrop/>}/>
                         </Routes>
                     </Router>
                 </ToastProvider>

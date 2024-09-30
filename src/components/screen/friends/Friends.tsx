@@ -32,7 +32,6 @@ export const FriendsScreen: React.FC = () => {
         console.log("error in postEvent - ", e)
     }
 
-
     const [userInvitedItem, setuserInvitedItem] = useState<listUserInvitedItem[]>([])
     const [totalCountUsers, settotalCountUsers] = useState(0)
     const [loading, setLoading] = useState(false);
@@ -152,7 +151,7 @@ export const FriendsScreen: React.FC = () => {
                 paddingLeft: '16px',
                 marginTop: '24px'
             }}>
-                <HorizontalSelector tabs={["Invite Info", "Friends", "Community"]} onTabSelect={handleTabSelect}/>
+                <HorizontalSelector tabs={["Invite Info", "Friends"]} onTabSelect={handleTabSelect}/>
 
 
                 {tabSelected === "Invite Info" &&
@@ -171,6 +170,7 @@ export const FriendsScreen: React.FC = () => {
 
                 {tabSelected == "Friends" &&
                     <div style={{
+                        width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -194,6 +194,7 @@ export const FriendsScreen: React.FC = () => {
 
                             </div> :
                             <div style={{
+                                width: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
@@ -201,18 +202,26 @@ export const FriendsScreen: React.FC = () => {
                             }}>
 
                                 {userInvitedItem ? (
-                                    <div>
+                                    <div style={{
+                                        width: '100%',
+                                        boxSizing: 'border-box',
+                                        paddingRight: '16px',
+                                        paddingLeft: '16px'
+                                    }}>
                                         {userInvitedItem.map((invite, pos) => (
-                                            <ItemElementsImprove
-                                                key={pos}
-                                                title={invite.userName}
-                                                handleClick={() => {}}
-                                                itemUpgrate={null}
-                                                img={""}
-                                                // onLoading={item.etaps === 1 || item.etaps === 3}
-                                            />
-                                            // <ItemFriends userName={invite.userName}
-                                            //              coinsReferral={`+${formatNumberToK(invite.coinsReferral)}`} position={pos + 1}selected={false} />
+                                            <div style={{
+                                                width: '100%'
+                                            }}>
+                                                <ItemElementsImprove
+                                                    key={pos}
+                                                    title={invite.userName}
+                                                    handleClick={() => {}}
+                                                    itemUpgrate={null}
+                                                    img={""}
+                                                    level={0}
+                                                    // onLoading={item.etaps === 1 || item.etaps === 3}
+                                                />
+                                            </div>
                                         ))}
                                     </div>
                                 ) : (
@@ -267,7 +276,7 @@ export const FriendsScreen: React.FC = () => {
 
                 <div style={{height: '16px'}}/>
                 <NavigationBar
-                    initialSelected={"friends"}
+                    initialSelected={"Friends"}
                     onFriendsClick={() => {}}
                     onFapClick={() => handleNav('fap')}
                     onQuestClick={() => handleNav('quests')}

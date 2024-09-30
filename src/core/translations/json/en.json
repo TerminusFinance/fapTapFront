@@ -1,5 +1,36 @@
 {
   "loading": {
     "loading": "Loading..."
+  },
+  "air_drop": {
+    "up_container": {
+      "title": "Task for participating in the AirDrop",
+      "btn_connect_wallet": "Connect wallet",
+      "btn_send_transaction": "Send transaction",
+      "btn_verify_the_transaction": "Verify the transaction"
+    },
+    "title": "Air drop",
+    "description_1": "Airdrop is the distribution of tokens to players' wallets. These tokens will be traded on leading exchanges, and you can either sell or hold them. To receive your tokens, you must connect your wallet.",
+    "description_2": "The user has the opportunity to participate in prize draws from all upcoming partnerships with Terminus Exchange Finance. This includes the distribution of tokens, clean coins, and various other interesting prizes. By linking their wallet and making a 1 ton transaction, users ensure that they are eligible to receive these rewards and also help eliminate bots from the process. This step is a one-time step and provides access to all future airdrops effortlessly.",
+    "description_3": "Connect your wallet now, develop in the game, and invite your friends. We will generously reward your efforts!"
+  },
+  "profile": {
+    "balance": "Balance",
+    "invite_friends_witch_prem": "Invite friends with premium",
+    "settings": "Settings",
+    "wallet": {
+      "title": "Connect your wallet",
+      "sub_title_v1": "Wallet Not connected",
+      "sub_title_v2": "Wallet Connected"
+    },
+    "clan": {
+      "title": "Your clan",
+      "sub_title": "You are not in the clan"
+    },
+    "air_drop": {
+      "title": "Air drop",
+      "sub_title_v1": "Air drop: you participating",
+      "sub_title_v2": "Participate in the air drop"
+    }
   }
 }

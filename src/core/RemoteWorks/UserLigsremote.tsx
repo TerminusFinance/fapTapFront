@@ -43,6 +43,8 @@ export interface getUserStatisticsResponse {
     level: number;
     levelName: string;
     position: number;
+    avatar: string;
+    maxPoints: number;
 }
 
 export const getUserStatistics = async (): Promise<getUserStatisticsResponse | string> => {

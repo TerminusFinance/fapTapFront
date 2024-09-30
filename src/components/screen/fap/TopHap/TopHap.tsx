@@ -63,7 +63,7 @@ export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile}) => {
                                 32.6%
                             </span>
                         </div>
-                        <LineProgressBar progress={10} height={8}/>
+                        <LineProgressBar progress={10} height={8} maxValue={20}/>
                     </div>
                 </div>
 

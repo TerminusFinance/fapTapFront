@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import IcQuestsHeader from "../../../assets/icon/ic_quest-header.svg";
 import {HorizontalSelector} from "../../otherViews/selectors/HorizontalSelector.tsx";
 import NavigationBar from "../../otherViews/navigationBar/NavigationBar.tsx";
@@ -7,10 +7,20 @@ import {ItemElementsImprove} from "../../otherViews/itemElements/ItemElementsImp
 import {useData} from "../../otherViews/DataContext.tsx";
 import {ModalQuestsMulti} from "../../modal/modalDeleteAccount/ModalQuests.tsx";
 import {checkSuccessTask, UserTask} from "../../../core/RemoteWorks/UsersRemote.tsx";
-import {isOpenUrlTask, IsStockReg} from "./typeQuests.ts";
+import {
+    CheckNftTask,
+    IsDaysChallengeTask,
+    isOpenUrlTask,
+    IsSampleTask,
+    IsStockReg,
+    IsTransferToneTask,
+    StockRegTask
+} from "./typeQuests.ts";
 import {useToast} from "../../otherViews/toast/ToastContext.tsx";
 import {ButtonMulti} from "../../otherViews/buttons/ButtonMulti.tsx";
 import {OpenUrl, useTelegramBackButton} from "../../../core/Utils.ts";
+import {Address, beginCell, toNano} from "ton-core";
+import {useTonConnectUI, useTonWallet} from "@tonconnect/ui-react";
 
 export const QuestsScreen: React.FC = () => {
 
@@ -19,7 +29,20 @@ export const QuestsScreen: React.FC = () => {
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState<UserTask | null>(null);
     const [visitTask, setVisitTask] = useState<boolean>(false);
+    const wallet = useTonWallet();
+    const [tonConnectUI] = useTonConnectUI();
+    const [userLanguage, setUserLanguage] = useState<string>('');
 
+    useEffect(() => {
+        // Получаем основной язык пользователя
+        const language = navigator.language || navigator.languages[0];
+
+        const primaryLanguage = language.split('-')[0];
+
+        // Устанавливаем язык в состояние компонента
+        setUserLanguage(primaryLanguage);
+        console.log("userLanguage - ",primaryLanguage, userLanguage)
+    }, []);
     try {
         useTelegramBackButton(true)
     } catch (e) {
@@ -82,7 +105,7 @@ export const QuestsScreen: React.FC = () => {
                 updateTaskState(SselectedTask.taskId, {isLoading: true});
                 const requestToCheck = await checkSuccessTask(SselectedTask.taskId)
                 if (typeof requestToCheck === 'object') {
-                    setDataApp(prevState =>({
+                    setDataApp(prevState => ({
                         ...prevState,
                         tasks: requestToCheck.tasks
                     }))
@@ -116,6 +139,42 @@ export const QuestsScreen: React.FC = () => {
         }
     }
 
+
+    const SendTransactions = async () => {
+        if (selectedTask != null) {
+            if (IsTransferToneTask(selectedTask.taskType) || IsDaysChallengeTask(selectedTask.taskType)) {
+                const amount = selectedTask.taskType.price
+                const address = selectedTask.taskType.addressToTransfer
+                const body = beginCell()
+                    .storeUint(0, 32) // write 32 zero bits to indicate that a text comment will follow
+                    .storeStringTail(dataApp.userId) // write our text comment
+                    .endCell()
+                const transaction = {
+                    validUntil: Date.now() + 1000000,
+                    messages: [
+                        {
+                            address: address,
+                            amount: toNano(amount).toString(),
+                            payload: body.toBoc().toString("base64") // payload with comment in body
+                        },
+                    ]
+                }
+                try {
+                    const addressWallet = wallet?.account?.address ? Address.parse(wallet?.account?.address as string) : undefined;
+                    if (addressWallet == undefined) {
+                        tonConnectUI.modal.open()
+                    } else {
+
+                        await tonConnectUI.sendTransaction(transaction)
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+    }
+
     return (
         <div style={{
             width: '100%',
@@ -141,94 +200,140 @@ export const QuestsScreen: React.FC = () => {
             }}>
 
 
-
-            <div style={{
-                width: 390,
-                height: 345,
-                paddingBottom: 173,
-                paddingLeft: 34,
-                paddingRight: 34,
-                left: 0,
-                top: 0,
-                position: 'absolute',
-                justifyContent: 'center',
-                alignItems: 'center',
-                display: 'inline-flex'
-            }}>
                 <div style={{
-                    width: 322,
-                    height: 90,
-                    background: 'linear-gradient(180deg, #B3ACFC 0%, #584CF4 100%)',
-                    boxShadow: '0px 0px 200px rgba(0, 0, 0, 0.25)',
-                    borderRadius: '50%',
-                    filter: 'blur(200px)',
-                    zIndex: 0
+                    width: 390,
+                    height: 345,
+                    paddingBottom: 173,
+                    paddingLeft: 34,
+                    paddingRight: 34,
+                    left: 0,
+                    top: 0,
+                    position: 'absolute',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    display: 'inline-flex'
+                }}>
+                    <div style={{
+                        width: 322,
+                        height: 90,
+                        background: 'linear-gradient(180deg, #B3ACFC 0%, #584CF4 100%)',
+                        boxShadow: '0px 0px 200px rgba(0, 0, 0, 0.25)',
+                        borderRadius: '50%',
+                        filter: 'blur(200px)',
+                        zIndex: 0
+                    }}/>
+                </div>
+
+
+                <img src={IcQuestsHeader} style={{
+                    width: '100px',
+                    height: '100px',
+                    marginBottom: '8px',
+                    marginTop: '32px'
                 }}/>
-            </div>
 
-
-            <img src={IcQuestsHeader} style={{
-                width: '100px',
-                height: '100px',
-                marginBottom: '8px',
-                marginTop: '32px'
-            }}/>
-
-            <span style={{
-                fontFamily: 'UbuntuBold',
-                color: '#F0EFFB',
-                fontSize: '24px',
-                marginBottom: '8px'
-            }}>
+                <span style={{
+                    fontFamily: 'UbuntuBold',
+                    color: '#F0EFFB',
+                    fontSize: '24px',
+                    marginBottom: '8px'
+                }}>
                 Task
             </span>
 
-            <span style={{
-                fontSize: '16px',
-                fontFamily: 'UbuntuRegular',
-                color: '#B5B7B9'
-            }}>
+                <span style={{
+                    fontSize: '16px',
+                    fontFamily: 'UbuntuRegular',
+                    color: '#B5B7B9'
+                }}>
                 Earn More Money
             </span>
-            <div style={{
-                width: '100%',
-                boxSizing: 'border-box',
-                paddingRight: '16px',
-                paddingLeft: '16px',
-                marginTop: '24px'
-            }}>
-                <HorizontalSelector tabs={["Task", "Quests", "Maker"]} onTabSelect={handleTabSelect}/>
+                <div style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    paddingRight: '16px',
+                    paddingLeft: '16px',
+                    marginTop: '24px'
+                }}>
+                    <HorizontalSelector tabs={["Task", "Quests", "Maker"]} onTabSelect={handleTabSelect}/>
 
-                {tabSelected === "Task" && (
-                    <div style={{
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        paddingRight: '16px',
-                        paddingLeft: '16px',
-                    }}>
-                        {dataApp.tasks.map((item) => {
+                    {tabSelected === "Task" && (
+                        <div style={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            paddingRight: '16px',
+                            paddingLeft: '16px',
+                        }}>
+                            {dataApp.tasks.map((item) => {
 
 
-                            if (item.completed) {
-                                return null;
-                            }
+                                if (item.completed || item.type != "Task") {
+                                    return null;
+                                }
 
-                            return (
-                                <ItemElementsImprove
-                                    key={item.taskId}
-                                    title={item.text}
-                                    handleClick={() => openBottomSheet(item)}
-                                    itemUpgrate={item.rewards ? item.rewards : null}
-                                    img={""}
-                                    onLoading={item.etaps === 1 || item.etaps === 3}
-                                />
-                            )
 
-                        })}
-                    </div>
-                )}
+                                if(typeof item.sortLocal == "string") {
+                                    if(item.sortLocal != "" || userLanguage != "") {
+                                        if(item.sortLocal != userLanguage) {
+                                            return null;
+                                        }
+                                    }
+                                }
 
-            </div>
+                                return (
+                                    <ItemElementsImprove
+                                        key={item.taskId}
+                                        title={item.text}
+                                        handleClick={() => openBottomSheet(item)}
+                                        itemUpgrate={item.rewards ? item.rewards : null}
+                                        img={item.checkIcon}
+                                        level={0}
+                                        onLoading={item.etaps === 1 || item.etaps === 3}
+                                    />
+                                )
+
+                            })}
+                        </div>
+                    )}
+
+                    {tabSelected === "Quests" && (
+                        <div style={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            paddingRight: '16px',
+                            paddingLeft: '16px',
+                        }}>
+                            {dataApp.tasks.map((item) => {
+
+
+                                if (item.completed || item.type != "Quests") {
+                                    return null;
+                                }
+                                if(typeof item.sortLocal == "string") {
+                                    if(item.sortLocal != "" || userLanguage != "") {
+                                        if(item.sortLocal != userLanguage) {
+                                            return null;
+                                        }
+                                    }
+                                }
+
+                                return (
+                                    <ItemElementsImprove
+                                        key={item.taskId}
+                                        title={item.text}
+                                        handleClick={() => openBottomSheet(item)}
+                                        itemUpgrate={item.rewards ? item.rewards : null}
+                                        img={item.checkIcon}
+                                        level={0}
+                                        onLoading={item.etaps === 1 || item.etaps === 3}
+                                    />
+                                )
+
+                            })}
+                        </div>
+                    )}
+
+                </div>
             </div>
 
             <div style={{
@@ -274,6 +379,27 @@ export const QuestsScreen: React.FC = () => {
                                                       if (selectedTask?.taskType != undefined) {
                                                           if (isOpenUrlTask(selectedTask.taskType)) {
                                                               OpenUrl(selectedTask.taskType.url)
+                                                          }
+                                                          if (CheckNftTask(selectedTask.taskType)) {
+                                                              OpenUrl(`https://getgems.io/collection/${(selectedTask.taskType as CheckNftTask).checkCollectionsAddress}`)
+                                                          }
+                                                          if (IsStockReg(selectedTask.taskType)) {
+                                                              OpenUrl(`${(selectedTask.taskType as StockRegTask).url}`);
+                                                          }
+                                                          // if(IsInternalChallengeTask(selectedTask.taskType)) {
+                                                          //     handleNav('airDrop');
+                                                          // }
+
+                                                          if (IsTransferToneTask(selectedTask.taskType)) {
+                                                              SendTransactions()
+                                                          }
+
+                                                          if (IsSampleTask(selectedTask.taskType)) {
+                                                              handleNav('airDrop');
+                                                          }
+
+                                                          if (IsDaysChallengeTask(selectedTask.taskType)) {
+                                                              SendTransactions()
                                                           }
                                                       }
                                                       setVisitTask(true)

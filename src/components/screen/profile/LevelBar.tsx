@@ -8,11 +8,12 @@ interface LevelBarParam {
     secondImg: string;
     txSecond: string;
     progress: number;
+    maxProgress: number;
     btnInformTx: string;
     onClick: () => void;
 }
 
-export const LevelBar: React.FC<LevelBarParam> = ({title, img, secondImg, txSecond, progress, btnInformTx, onClick}) => {
+export const LevelBar: React.FC<LevelBarParam> = ({title, img, secondImg, txSecond, progress, maxProgress,btnInformTx, onClick}) => {
     return (
         <div style={{
             display: 'flex',
@@ -35,11 +36,14 @@ export const LevelBar: React.FC<LevelBarParam> = ({title, img, secondImg, txSeco
                     flexDirection: 'row',
                     alignContent: 'center',
                     alignItems: 'center',
-                    gap: '10px'
+                    gap: '10px',
                 }}>
                     <img src={img} style={{
                         width: '56px',
-                        height: '56px'
+                        height: '56px',
+                        border: "1px solid white",
+                        borderRadius: "999px",
+                        objectFit: 'cover'
                     }}/>
                     <div style={{
                         display: 'flex',
@@ -106,7 +110,7 @@ export const LevelBar: React.FC<LevelBarParam> = ({title, img, secondImg, txSeco
             </div>
 
             <div style={{position: 'relative', width: '100%', marginTop: '8px'}}>
-                <LineProgressBar progress={progress} height={24}/>
+                <LineProgressBar progress={progress} height={24} maxValue={maxProgress}/>
 
                     <span style={{
                         position: 'absolute',

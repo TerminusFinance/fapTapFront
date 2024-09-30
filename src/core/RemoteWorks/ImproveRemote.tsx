@@ -16,6 +16,8 @@ export interface Rewards {
     img: string;
 }
 
+
+
 export interface UsersImproveItem {
     improveId: number;
     name: string;
@@ -88,6 +90,7 @@ export const upLevelToItem = async (userCustomId: number, improveId: number) => 
 export interface UserCustom {
     customId: number;
     name: string;
+    description: string;
     price: PriceCustom;
     image: string;
     imagePrew: string;
@@ -101,6 +104,11 @@ export interface PriceCustom {
     price?: number | null;
 }
 
+
+export interface getSelectedModelsForUser {
+    model: UserCustom,
+    appartment: UserCustom,
+}
 
 export const getUserCustom = async (): Promise<UserCustom[] | string> => {
     try {

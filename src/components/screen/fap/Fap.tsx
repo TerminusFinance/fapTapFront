@@ -142,7 +142,7 @@ export const FapScreen: React.FC = () => {
             height: '100vh',
             position: 'relative',
             overflow: 'hidden',
-            backgroundImage: `url(${BgBadRoom})`,
+            backgroundImage: dataApp.selectedModel?.appartment.image ? `url(${dataApp.selectedModel?.appartment.image})`: `url(${BgBadRoom})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -169,7 +169,7 @@ export const FapScreen: React.FC = () => {
             <div>
 
                 <img
-                    src={dataApp.selectedModel?.image ? dataApp.selectedModel?.image :PunkModel }
+                    src={dataApp.selectedModel?.model?.image ? dataApp.selectedModel.model?.image :PunkModel }
                     alt="Girl"
                     style={{
                         position: "absolute",
