@@ -18,8 +18,8 @@ import {useData} from "../../otherViews/DataContext.tsx";
 import {useToast} from "../../otherViews/toast/ToastContext.tsx";
 import IcSmile from "../../../assets/icon/ic_sad_smile.svg";
 import {getUserInvited, listUserInvitedItem} from "../../../core/RemoteWorks/FriendsRemote.tsx";
-import {ItemElementsImprove} from "../../otherViews/itemElements/ItemElementsImprove.tsx";
 import Progressbar from "../../otherViews/progresBar/ProgressBar.tsx";
+import {ItemElementsIFriends} from "../../otherViews/itemElements/ItemElementsFriends.tsx";
 
 export const FriendsScreen: React.FC = () => {
 
@@ -212,13 +212,12 @@ export const FriendsScreen: React.FC = () => {
                                             <div style={{
                                                 width: '100%'
                                             }}>
-                                                <ItemElementsImprove
+                                                <ItemElementsIFriends
                                                     key={pos}
                                                     title={invite.userName}
-                                                    handleClick={() => {}}
-                                                    itemUpgrate={null}
                                                     img={""}
                                                     level={0}
+                                                    coins={invite.coinsReferral}
                                                     // onLoading={item.etaps === 1 || item.etaps === 3}
                                                 />
                                             </div>

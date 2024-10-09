@@ -63,3 +63,11 @@ export const  formatNumberToK = (num: number): string => {
         return num.toString();
     }
 };
+
+export     const formatNumber = (num: number): string => {
+    if (num < 1000) {
+        return num.toString();
+    }
+
+    return num.toLocaleString('en-US');
+};

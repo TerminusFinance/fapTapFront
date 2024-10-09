@@ -29,10 +29,10 @@ const initialUserBasic: UserBasic = {
     maxEnergy: 1000,
     boosts: [],
     completedTasks: [],
-    tasks: [],
     perTap: 1,
     enabledAirDrop: 0,
     antiBotChecker: 0,
+    oneTimePremium: 0,
 };
 
 const DataProvider: React.FC<DataProviderProps> = ({ children }) => {

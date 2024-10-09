@@ -44,7 +44,7 @@ export interface UserBasic {
     address?: string,
     boosts: BoostItem[]
     completedTasks: number[] | null;
-    tasks: UserTask[];
+    // tasks: UserTask[];
     imageAvatar?: string | null;
     enabledAirDrop: number;
     antiBotChecker: number;
@@ -52,7 +52,8 @@ export interface UserBasic {
     maxEnergy: number,
     perTap: number;
     selectedModel?: getSelectedModelsForUser | null;
-    ligsUser?: getUserStatisticsResponse | null
+    ligsUser?: getUserStatisticsResponse | null;
+    oneTimePremium: number;
 }
 
 export const addCoinsToClickData = async (coins: number): Promise<UserBasic> => {
@@ -110,9 +111,9 @@ export const getUserById = async (): Promise<UserBasic | string> => {
     }
 };
 
-export const checkSuccessTask = async (taskId: number): Promise<UserBasic | string> => {
+export const checkSuccessTask = async (taskId: number): Promise<UserTask[] | string> => {
     try {
-        const response = await axios.post<UserBasic>(`${BASE_URL}task/checkSuccessTask`, {
+        const response = await axios.post<UserTask[]>(`${BASE_URL}task/checkSuccessTask`, {
             taskId
         }, {headers: {Authorization: `tma ${initDataRaw}`}});
         console.log("response.data checkSuccessTask - ", response.data);
@@ -145,3 +146,22 @@ export const processInvitationFromInviteCode = async (inviteCode: string): Promi
         throw error;
     }
 };
+
+export const getTaskForUser = async () => {
+    try {
+
+        const result = await axios.get<UserTask[]>(`${BASE_URL}task/getTaskForUser`,
+             {headers: {Authorization: `tma ${initDataRaw}`}}
+        );
+
+        return result.data;
+    } catch (error) {
+        console.error('Error processing invitation:', error);
+        console.error('Error getting user:', error);
+        if (axios.isAxiosError(error) && error.response) {
+            console.log('Axios error response data:', error.response.data);
+            return "User not found"
+        }
+        throw error;
+    }
+}

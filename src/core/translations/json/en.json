@@ -32,5 +32,22 @@
       "sub_title_v1": "Air drop: you participating",
       "sub_title_v2": "Participate in the air drop"
     }
+  },
+  "clans": {
+    "upgrade_clan_rating": "Upgrade your clan rating",
+    "modal": {
+      "title": "Boost Clan Rank",
+      "sub_title": "Promote your clan to the top of the ranking",
+      "action_btn": "UPGRADE CLAN RATING"
+    },
+    "create_your_clan": "Create your clan",
+    "create_clan_modal": {
+      "title": "Create Your Clan",
+      "name": "Clan name",
+      "description": "Clan Description",
+      "channel": "Clan Channel",
+      "creating_clan": "Creating a clan",
+      "btn_create_clan": "Create Clan"
+    }
   }
 }

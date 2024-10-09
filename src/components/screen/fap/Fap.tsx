@@ -9,29 +9,11 @@ import {useNavigate} from "react-router-dom";
 import {useData} from "../../otherViews/DataContext.tsx";
 import {addCoinsToClickData} from "../../../core/RemoteWorks/UsersRemote.tsx";
 import {useTelegramBackButton} from "../../../core/Utils.ts";
-
-// const backgroundAnimation = `
-// @keyframes backgroundScaleUp {
-//   0% {
-//     background-size: cover;
-//   }
-//   100% {
-//     background-size: 120%;
-//   }
-// }
-//
-// @keyframes backgroundScaleDown {
-//   0% {
-//     background-size: 120%;
-//   }
-//   100% {
-//     background-size: cover;
-//   }
-// }
-// `;
+import {ModalSettings} from "../../modal/modalSettings/ModalSettings.tsx";
+import {ModalDailyReward} from "../../modal/modalDayliReward/ModalDailyReward.tsx";
+import {ModalNotificationPremium} from "../../modal/modalNotificationPremium/ModalNotificationPremium.tsx";
 
 const moveUp = `
-
 
 @keyframes moveUp {
     0% {
@@ -50,18 +32,35 @@ export const FapScreen: React.FC = () => {
     const [coinsAddedCount, setCoinsAddedCount] = useState<number>(1);
     const touchStartTimeRef = useRef<{ [key: number]: number }>({});
     const {dataApp, setDataApp} = useData();
-    const { energy, setEnergy } = useData();
+    const {energy, setEnergy} = useData();
     const [clicks, setClicks] = useState<number>(dataApp.coins !== undefined && dataApp.coins !== null ? dataApp.coins : 0);
     const [accumulatedClicks, setAccumulatedClicks] = useState<number>(0);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const [isVisibleModalSettings, setIsVisibleModalSettings] = useState(false)
+    const [isVisibleModalDailyReward, setIsVisibleModalDailyReward] = useState(false)
+    const [isVisibleModalNotificationPrem, setIsVisibleModalNotificationPrem] = useState(false)
 
+    const onCloseModal = () => {
+        setIsVisibleModalSettings(false)
+        setIsVisibleModalDailyReward(false)
+        setIsVisibleModalNotificationPrem(false)
+    }
 
+    useEffect(() => {
+        const hasShownInviteSession = sessionStorage.getItem('hasShownInviteSession') === 'true';
+
+        if (dataApp.oneTimePremium == 0 && !hasShownInviteSession) {
+            setIsVisibleModalNotificationPrem(true);
+            sessionStorage.setItem('hasShownInviteSession', 'true');
+        }
+    }, [dataApp]);
 
     try {
         useTelegramBackButton(false)
     } catch (e) {
         console.log("error in postEvent - ", e)
     }
+
     useEffect(() => {
         intervalRef.current = setInterval(() => {
             if (accumulatedClicks > 0) {
@@ -142,7 +141,7 @@ export const FapScreen: React.FC = () => {
             height: '100vh',
             position: 'relative',
             overflow: 'hidden',
-            backgroundImage: dataApp.selectedModel?.appartment.image ? `url(${dataApp.selectedModel?.appartment.image})`: `url(${BgBadRoom})`,
+            backgroundImage: dataApp.selectedModel?.appartment.image ? `url(${dataApp.selectedModel?.appartment.image})` : `url(${BgBadRoom})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -169,7 +168,7 @@ export const FapScreen: React.FC = () => {
             <div>
 
                 <img
-                    src={dataApp.selectedModel?.model?.image ? dataApp.selectedModel.model?.image :PunkModel }
+                    src={dataApp.selectedModel?.model?.image ? dataApp.selectedModel.model?.image : PunkModel}
                     alt="Girl"
                     style={{
                         position: "absolute",
@@ -214,17 +213,23 @@ export const FapScreen: React.FC = () => {
                 ))}
             </div>
 
-            <div style={{
-                position: 'relative',
-                zIndex: 2,
-                width: '100%',
-                boxSizing: 'border-box',
-                marginTop: '8px',
-                paddingLeft: '8px',
-                paddingRight: '8px'
-            }}>
-                <TopHap onClickProfile={() => handleNav('profile')} coins={clicks}/>
-            </div>
+            {dataApp.ligsUser &&
+                <div style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    marginTop: '8px',
+                    paddingLeft: '8px',
+                    paddingRight: '8px'
+                }}>
+                    <TopHap onClickProfile={() => handleNav('profile')} coins={clicks} perTap={dataApp.perTap}
+                            progress={dataApp.ligsUser?.points} maxProgress={dataApp.ligsUser?.maxPoints}
+                            onClickSettings={() => setIsVisibleModalSettings(true)}
+                            onClickDaily={() => setIsVisibleModalDailyReward(true)}/>
+                </div>
+            }
+
 
             <div style={{
                 position: 'fixed',
@@ -242,12 +247,17 @@ export const FapScreen: React.FC = () => {
                 <NavigationBar
                     initialSelected={"Fap"}
                     onFriendsClick={() => handleNav("friends")}
-                    onFapClick={() => {}}
+                    onFapClick={() => {
+                    }}
                     onQuestClick={() => handleNav('quests')}
                     onTopClick={() => handleNav('top')}
                     onImproveClick={() => handleNav('improve')}
                 />
             </div>
+
+            <ModalSettings isVisible={isVisibleModalSettings} onClose={onCloseModal}/>
+            <ModalDailyReward isVisible={isVisibleModalDailyReward} onClose={onCloseModal}/>
+            <ModalNotificationPremium isVisible={isVisibleModalNotificationPrem} onClose={onCloseModal}/>
         </div>
     );
 }

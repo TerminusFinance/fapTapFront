@@ -7,9 +7,10 @@ interface ItemElementsMainParam {
     img: string;
     txSecond: string;
     btnInformTx: string;
+    onClick?: () => void | null;
 }
 
-export const ItemElementsMain: React.FC<ItemElementsMainParam> = ({title, img, txSecond, btnInformTx}) => {
+export const ItemElementsMain: React.FC<ItemElementsMainParam> = ({title, img, txSecond, btnInformTx, onClick}) => {
 
     return (
         <div style={{
@@ -104,7 +105,10 @@ export const ItemElementsMain: React.FC<ItemElementsMainParam> = ({title, img, t
                         fontFamily: 'UbuntuMedium'
                     }}>{btnInformTx}</span>
                     </div>
-                    <ButtonNext sizeBtn={32} onClick={() => {}} sizeImg={16}/>
+                    {onClick ?      <ButtonNext sizeBtn={32} onClick={onClick } sizeImg={16}/> :
+
+                        <ButtonNext sizeBtn={32} onClick={() => {}} sizeImg={16}/>}
+
                 </div>
 
             </div>

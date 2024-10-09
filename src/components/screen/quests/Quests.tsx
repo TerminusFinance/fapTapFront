@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import IcQuestsHeader from "../../../assets/icon/ic_quest-header.svg";
 import {HorizontalSelector} from "../../otherViews/selectors/HorizontalSelector.tsx";
 import NavigationBar from "../../otherViews/navigationBar/NavigationBar.tsx";
@@ -6,13 +6,13 @@ import {useNavigate} from "react-router-dom";
 import {ItemElementsImprove} from "../../otherViews/itemElements/ItemElementsImprove.tsx";
 import {useData} from "../../otherViews/DataContext.tsx";
 import {ModalQuestsMulti} from "../../modal/modalDeleteAccount/ModalQuests.tsx";
-import {checkSuccessTask, UserTask} from "../../../core/RemoteWorks/UsersRemote.tsx";
+import {checkSuccessTask, getTaskForUser, UserTask} from "../../../core/RemoteWorks/UsersRemote.tsx";
 import {
     CheckNftTask,
     IsDaysChallengeTask,
     isOpenUrlTask,
     IsSampleTask,
-    IsStockReg,
+    IsStockReg, isStockTrTask,
     IsTransferToneTask,
     StockRegTask
 } from "./typeQuests.ts";
@@ -21,10 +21,11 @@ import {ButtonMulti} from "../../otherViews/buttons/ButtonMulti.tsx";
 import {OpenUrl, useTelegramBackButton} from "../../../core/Utils.ts";
 import {Address, beginCell, toNano} from "ton-core";
 import {useTonConnectUI, useTonWallet} from "@tonconnect/ui-react";
+import Progressbar from "../../otherViews/progresBar/ProgressBar.tsx";
 
 export const QuestsScreen: React.FC = () => {
 
-    const {dataApp, setDataApp} = useData();
+    const {dataApp} = useData();
     const [tabSelected, setTabSelected] = useState<string>("Task");
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState<UserTask | null>(null);
@@ -32,7 +33,9 @@ export const QuestsScreen: React.FC = () => {
     const wallet = useTonWallet();
     const [tonConnectUI] = useTonConnectUI();
     const [userLanguage, setUserLanguage] = useState<string>('');
-
+    const [tasks, setTasks] = useState<UserTask[]>([])
+    const [loading, setLoading] = useState(false);
+    const hasFetchedData = useRef(false);
     useEffect(() => {
         // Получаем основной язык пользователя
         const language = navigator.language || navigator.languages[0];
@@ -74,6 +77,23 @@ export const QuestsScreen: React.FC = () => {
     };
 
 
+    const getTasks = async () => {
+        const result = await getTaskForUser()
+        if(typeof result == "object") {
+            setTasks(result)
+        }
+    }
+
+    useEffect(() => {
+        if (!hasFetchedData.current) {
+            setLoading(true)
+            getTasks().finally(() => {
+                hasFetchedData.current = true
+                setLoading(false)
+            })
+        }
+    }, []);
+
     const navigate = useNavigate();
 
     const handleNav = (marsh: string) => {
@@ -105,10 +125,7 @@ export const QuestsScreen: React.FC = () => {
                 updateTaskState(SselectedTask.taskId, {isLoading: true});
                 const requestToCheck = await checkSuccessTask(SselectedTask.taskId)
                 if (typeof requestToCheck === 'object') {
-                    setDataApp(prevState => ({
-                        ...prevState,
-                        tasks: requestToCheck.tasks
-                    }))
+                    setTasks(requestToCheck)
                     // setDataApp(requestToCheck);
                     if (IsStockReg(SselectedTask.taskType)) {
                         if (SselectedTask.etaps == 0 || SselectedTask.etaps == 2) {
@@ -255,7 +272,7 @@ export const QuestsScreen: React.FC = () => {
                     paddingLeft: '16px',
                     marginTop: '24px'
                 }}>
-                    <HorizontalSelector tabs={["Task", "Quests", "Maker"]} onTabSelect={handleTabSelect}/>
+                    <HorizontalSelector tabs={["Task", "Quests", "Dex"]} onTabSelect={handleTabSelect}/>
 
                     {tabSelected === "Task" && (
                         <div style={{
@@ -264,7 +281,7 @@ export const QuestsScreen: React.FC = () => {
                             paddingRight: '16px',
                             paddingLeft: '16px',
                         }}>
-                            {dataApp.tasks.map((item) => {
+                            {tasks.map((item) => {
 
 
                                 if (item.completed || item.type != "Task") {
@@ -303,10 +320,47 @@ export const QuestsScreen: React.FC = () => {
                             paddingRight: '16px',
                             paddingLeft: '16px',
                         }}>
-                            {dataApp.tasks.map((item) => {
+                            {tasks.map((item) => {
 
 
                                 if (item.completed || item.type != "Quests") {
+                                    return null;
+                                }
+                                if(typeof item.sortLocal == "string") {
+                                    if(item.sortLocal != "" || userLanguage != "") {
+                                        if(item.sortLocal != userLanguage) {
+                                            return null;
+                                        }
+                                    }
+                                }
+
+                                return (
+                                    <ItemElementsImprove
+                                        key={item.taskId}
+                                        title={item.text}
+                                        handleClick={() => openBottomSheet(item)}
+                                        itemUpgrate={item.rewards ? item.rewards : null}
+                                        img={item.checkIcon}
+                                        level={0}
+                                        onLoading={item.etaps === 1 || item.etaps === 3}
+                                    />
+                                )
+
+                            })}
+                        </div>
+                    )}
+
+                    {tabSelected === "Dex" && (
+                        <div style={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            paddingRight: '16px',
+                            paddingLeft: '16px',
+                        }}>
+                            {tasks.map((item) => {
+
+
+                                if (item.completed || item.type != "Dex") {
                                     return null;
                                 }
                                 if(typeof item.sortLocal == "string") {
@@ -401,6 +455,9 @@ export const QuestsScreen: React.FC = () => {
                                                           if (IsDaysChallengeTask(selectedTask.taskType)) {
                                                               SendTransactions()
                                                           }
+                                                          if(isStockTrTask(selectedTask.taskType)) {
+                                                              OpenUrl(selectedTask.taskType.url)
+                                                          }
                                                       }
                                                       setVisitTask(true)
                                                   }
@@ -411,7 +468,7 @@ export const QuestsScreen: React.FC = () => {
                                   }
                 />
             )}
-
+            {loading && <Progressbar/>}
         </div>
     )
 }

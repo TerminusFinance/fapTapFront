@@ -19,6 +19,8 @@ import {
 import ProgressBar from "../../otherViews/progresBar/ProgressBar.tsx";
 import {ItemElementsMain} from "../../otherViews/itemElements/ItemElementsMain.tsx";
 import SimpleHorizontalSelector from "../../otherViews/selectors/SimpleHorizontalSelector.tsx";
+import {ButtonMain} from "../../otherViews/buttons/ButtonMain.tsx";
+import {CreateClanModal} from "../../modal/modalCreateClan/ModalCreateClan.tsx";
 
 
 export const TopScreen: React.FC = () => {
@@ -47,6 +49,13 @@ export const TopScreen: React.FC = () => {
         console.log("error in postEvent - ", e)
     }
 
+    const [createClanVisible, setCreateClanVisible] = useState(false)
+
+
+
+    const onCloseModal = () => {
+        setCreateClanVisible(false)
+    }
 
     const handleTabSelect = (selectedTab: string) => {
         console.log(`Selected tab: ${selectedTab}`);
@@ -397,7 +406,7 @@ export const TopScreen: React.FC = () => {
                         )}
                     </div>
                 ) : (
-                    <div style={{width: '100%'}}>{userClan && (
+                    <div style={{width: '100%'}}>{userClan ? (
                         <div style={{
                             width: '100%',
                             boxSizing: 'border-box',
@@ -410,7 +419,20 @@ export const TopScreen: React.FC = () => {
                                 txSecond={`Rank: #${userClan.contributedRating}`}
                                 btnInformTx={formatNumberToK(userClan.clan.rating)}
                                 img={""}
+                                onClick={() => {
+                                    if ("clan" in userClan) {
+                                        navigate(`/clanMore`, {state: {clanItem: userClan.clan}})
+                                    }}}
                             />
+                        </div>
+                    ) : (
+                        <div style={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            paddingRight: '16px',
+                            paddingLeft: '16px'
+                        }}>
+                            <ButtonMain tx={"Create Clan"} onClick={() => {setCreateClanVisible(true)}} onRed={false}/>
                         </div>
                     )}</div>
                 )}
@@ -427,6 +449,7 @@ export const TopScreen: React.FC = () => {
                 />
             </div>
 
+            <CreateClanModal isVisible={createClanVisible} onClose={onCloseModal} onBtnClick={RequestToServerToGetUsersLeagueList}/>
             {loading && <ProgressBar/>}
         </div>
     )

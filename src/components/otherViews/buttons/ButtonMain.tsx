@@ -4,9 +4,10 @@ interface ButtonMainParam {
     tx: string;
     onClick: () => void;
     onRed?: boolean;
+    imgInTx?: string | null;
 }
 
-export const ButtonMain: React.FC<ButtonMainParam> = ({tx, onClick, onRed}) => {
+export const ButtonMain: React.FC<ButtonMainParam> = ({tx, onClick, onRed, imgInTx}) => {
     const [isPressed, setIsPressed] = useState(false);
 
     return (
@@ -46,6 +47,12 @@ export const ButtonMain: React.FC<ButtonMainParam> = ({tx, onClick, onRed}) => {
                 fontFamily: 'UbuntuBold',
             }}>{tx}
             </div>
+            {imgInTx &&
+            <img src={imgInTx} style={{
+                width: '16px',
+                height: '16px'
+            }}/>
+            }
         </div>
     )
 

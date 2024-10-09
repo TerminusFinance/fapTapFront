@@ -14,6 +14,8 @@ export interface ImproveResultUserItem {
 export interface Rewards {
     name: string;
     img: string;
+    count: number;
+    tag: string;
 }
 
 
@@ -21,6 +23,7 @@ export interface Rewards {
 export interface UsersImproveItem {
     improveId: number;
     name: string;
+    description: string;
     category: string;
     price: number;
     image: string;

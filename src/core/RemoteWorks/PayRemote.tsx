@@ -23,6 +23,24 @@ export const subscribeToPremium = async (subscriptionOptions: SubscriptionOption
     }
 }
 
+export const buyOneTimePremium = async (): Promise<SubscribeResult | string> => {
+    try {
+        const response = await axios.post<SubscribeResult>(`${BASE_URL}prem/buyOneTimePremium`, {
+
+            },
+            {headers: {Authorization: `tma ${initDataRaw}`}})
+        console.log("getListSubscriptionOptionsResponse - ", response.data)
+        if (typeof response.data == "object") {
+            return response.data
+        } else {
+            return "Error request"
+        }
+    } catch (e) {
+        console.log("getListSubscriptionOptionsResponseError - ", e)
+        return `error ${e}`
+    }
+}
+
 
 export const buyCustomItem = async(customId: number) => {
     try {

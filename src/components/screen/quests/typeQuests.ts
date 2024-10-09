@@ -10,8 +10,13 @@ export type TaskType = SampleTask
     | InternalChallengeTask
     | TransferToneTask
     | CheckStarsSendersTask
-    | DaysChallengeTask;
+    | DaysChallengeTask
+    | StockTrTask;
 
+
+export const isStockTrTask = (taskType: TaskType): taskType is StockTrTask => {
+    return taskType.type === "StockTr"
+}
 export const isSampleTask = (taskType: TaskType): taskType is SampleTask => {
     return taskType.type === 'Sample';
 };
@@ -57,6 +62,13 @@ export const IsDaysChallengeTask = (taskType: TaskType): taskType is DaysChallen
 
 export const IsSampleTask = (taskType: TaskType): taskType is SampleTask => {
     return taskType.type === 'Sample';
+}
+
+export interface StockTrTask {
+    type: "StockTr";
+    class: string;
+    url: string;
+    // walletForParent: string;
 }
 
 export interface SampleTask {

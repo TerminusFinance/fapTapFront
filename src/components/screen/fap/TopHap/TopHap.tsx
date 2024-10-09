@@ -7,14 +7,21 @@ import IcGift from "../../../../assets/icon/ic_gift.svg";
 import IcSettings from "../../../../assets/icon/ic_settings.svg";
 import {InformationBarSimple} from "../../../otherViews/informationBar/InformationBarSimple.tsx";
 import IcCoins from "../../../../assets/icon/ic_coin.svg";
+import {formatNumber} from "../../../../core/Utils.ts";
 
 interface TopHapParams {
     coins: number;
+    perTap: number;
+    progress: number;
+    maxProgress: number;
     onClickProfile : () => void;
-
+    onClickSettings: () => void;
+    onClickDaily: () => void;
 }
 
-export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile}) => {
+export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile,perTap, progress, maxProgress,onClickSettings, onClickDaily}) => {
+
+    const progressPercentage = (progress / maxProgress) * 100;
 
     return (
         <div style={{
@@ -60,10 +67,10 @@ export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile}) => {
                             </div>
 
                             <span style={{color: 'white', fontFamily: 'UbuntuMedium', fontSize: '14px'}}>
-                                32.6%
+                                {progressPercentage.toFixed(1)}%
                             </span>
                         </div>
-                        <LineProgressBar progress={10} height={8} maxValue={20}/>
+                        <LineProgressBar progress={progress} height={8} maxValue={maxProgress}/>
                     </div>
                 </div>
 
@@ -73,8 +80,8 @@ export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile}) => {
                     gap: '8px'
                 }}>
                     <RoundButton size={48} bgColor={"#000"} image={IcCat} sizeItem={24}/>
-                    <RoundButton size={48} bgColor={"#000"} image={IcGift} sizeItem={24}/>
-                    <RoundButton size={48} bgColor={"#000"} image={IcSettings} sizeItem={24}/>
+                    <RoundButton size={48} bgColor={"#000"} image={IcGift} sizeItem={24} clickHandler={onClickDaily}/>
+                    <RoundButton size={48} bgColor={"#000"} image={IcSettings} sizeItem={24} clickHandler={onClickSettings}/>
                 </div>
 
             </div>
@@ -104,7 +111,7 @@ export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile}) => {
                         fontFamily: 'UbuntuBold',
                         fontSize: '24px'
                     }}>
-                    {coins}
+                    {formatNumber(coins)}
                 </span>
                 </div>
 
@@ -114,7 +121,7 @@ export const TopHap: React.FC<TopHapParams> = ({coins, onClickProfile}) => {
                     gap: '4px'
                 }}>
 
-                    <InformationBarSimple txFirst={"+1"} txSecond={"per tap"}/>
+                    <InformationBarSimple txFirst={`+${perTap}`} txSecond={"per tap"}/>
                     <InformationBarSimple txFirst={"+1"} txSecond={"per hour"}/>
                 </div>
             </div>

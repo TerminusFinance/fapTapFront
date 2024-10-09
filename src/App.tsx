@@ -14,6 +14,7 @@ import { UserLigsScreen } from './components/screen/userLigs/UserLigs.tsx';
 import { FriendsScreen } from './components/screen/friends/Friends.tsx';
 import {TopScreen} from "./components/screen/top/Top.tsx";
 import AirDrop from "./components/screen/airDrop/AirDrop.tsx";
+import {ClanMore} from "./components/screen/top/clanMore/ClanMore.tsx";
 const App: React.FC = () => {
 
 
@@ -48,6 +49,7 @@ const App: React.FC = () => {
                             <Route path="/friends" element={<FriendsScreen/>}/>
                             <Route path="/top" element={<TopScreen/>}/>
                             <Route path="/airDrop" element={<AirDrop/>}/>
+                            <Route path="/clanMore" element={<ClanMore/>}/>
                         </Routes>
                     </Router>
                 </ToastProvider>

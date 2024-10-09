@@ -28,6 +28,7 @@ import {initInvoice} from "@telegram-apps/sdk";
 import {ButtonNext} from "../../otherViews/buttons/ButtonNext.tsx";
 import {ModalBuyPrem} from "../../modal/modalBuyPrem/ModalBuyPrem.tsx";
 import {ModalCustomPrev} from "../../modal/modalCustomPrev/ModalCustomPrev.tsx";
+import {getUserById} from "../../../core/RemoteWorks/UsersRemote.tsx";
 
 export const ImproveScreen: React.FC = () => {
     const {dataApp, setDataApp} = useData();
@@ -185,8 +186,14 @@ export const ImproveScreen: React.FC = () => {
                     coins: result.coins
                 }));
                 setItemImprove(result.itemResults);
-                handleShowToast('Success up level', "success");
-                onCloseModal();
+                const resultUser = await getUserById();
+                if(typeof resultUser == "object") {
+                    setDataApp(resultUser);
+                    handleShowToast('Success up level', "success");
+                    onCloseModal();
+                } else {
+                    handleShowToast("An error from update item", "error");
+                }
             } else {
                 handleShowToast(result, "error");
             }
@@ -363,7 +370,7 @@ export const ImproveScreen: React.FC = () => {
                     img={selectedImprove?.image}
                     title={selectedImprove?.name}
                     price={selectedImprove?.price}
-                    description={selectedImprove.name}
+                    description={selectedImprove.description}
                     rewards={selectedImprove?.rewards}
                     onClick={upLevelImprove}
                 />

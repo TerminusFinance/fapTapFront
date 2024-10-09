@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {MiddleDie} from "../../otherViews/die/MiddleDie.tsx";
 import IcCoins from "../../../assets/icon/ic_coin.svg";
 import IcTrophy from "../../../assets/icon/ic_trophy.svg";
@@ -19,6 +19,10 @@ import {getUserById} from "../../../core/RemoteWorks/UsersRemote.tsx";
 import {updateUser} from "../../../core/RemoteWorks/AirDropRemote.tsx";
 import {useTranslation} from "react-i18next";
 import IcCoinUp from "../../../assets/icon/ic_coin.svg";
+import IcTon from "../../../assets/icon/ic_coin.svg";
+import {ModalIdoPoolst} from "../../modal/modalIdoPoolst/ModalIdoPoolst.tsx";
+import Progressbar from "../../otherViews/progresBar/ProgressBar.tsx";
+import {getSendedTone} from "../../../core/RemoteWorks/poolsRemote.tsx";
 
 export const ProfileScreen: React.FC = () => {
 
@@ -30,6 +34,9 @@ export const ProfileScreen: React.FC = () => {
     const wallet = useTonWallet();
     const [setUpAddress, setSetUpAddress] = useState(false)
     const { t } = useTranslation();
+    const hasFetchedData = useRef(false);
+    const [loading, setLoading] = useState(false);
+    const [pools, setPools] = useState(0)
     // Check if the InformationBoard was already closed
     useEffect(() => {
         const isInfoBoardClosed = localStorage.getItem("infoBoardClosed");
@@ -43,6 +50,32 @@ export const ProfileScreen: React.FC = () => {
             navigate('/airDrop')
         }
     }
+
+    const [isVisibleModalIdo, setIsVisibleModalIdo] = useState(false)
+
+
+    const onCloseModal = () => {
+        setIsVisibleModalIdo(false)
+    }
+
+    const getPools = async () => {
+        setLoading(true)
+        const result = await getSendedTone()
+        if(typeof result == "number") {
+            setPools(result)
+        }
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (!hasFetchedData.current) {
+            setLoading(true)
+            getPools().finally(() => {
+                hasFetchedData.current = true
+                setLoading(false)
+            })
+        }
+    }, []);
 
     const updateAddressUsers = async (address: string) => {
         await updateUser({address: address});
@@ -167,14 +200,6 @@ export const ProfileScreen: React.FC = () => {
                     color: 'white',
                 }}>{dataApp.userName}</p>
 
-                {/*<p style={{*/}
-                {/*    fontSize: '14px',*/}
-                {/*    fontFamily: 'UbuntuMedium',*/}
-                {/*    color: '#584CF4',*/}
-                {/*    marginTop: '4px'*/}
-                {/*}}>@name</p>*/}
-
-
                 <div
                     style={{
                         display: 'flex',
@@ -259,7 +284,9 @@ export const ProfileScreen: React.FC = () => {
             }}>
                 <ItemElementsStats img={IcTrophy} title={"Your rank on top:"} txSecond={`#${dataApp.ligsUser?.position}`} handleClick={() => {
                 }}/>
+                <IdoItem poolse={pools} onClick={() => {setIsVisibleModalIdo(true)}}/>
             </div>
+
 
 
             <div style={{
@@ -316,6 +343,49 @@ export const ProfileScreen: React.FC = () => {
                                 }}/>
 
 
+            <ModalIdoPoolst isVisible={isVisibleModalIdo} onClose={onCloseModal} successHandler={() => {getPools()}}/>
+            {loading && <Progressbar/>}
+        </div>
+    )
+}
+
+
+
+export const IdoItem: React.FC<{ poolse: number,onClick: () => void }> = ({poolse, onClick}) => {
+    return (
+        <div style={{
+            width: '100%',
+            display: 'flex',
+            // border: "1px solid black",
+            background: '#252830',
+            borderRadius: '16px',
+            padding: '12px',
+            flexDirection: 'column',
+        }}>
+            <span style={{
+                color: 'white',
+                fontFamily: 'UbuntuBold',
+                fontSize: '16px'
+            }}>
+                Pools
+            </span>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '4px'
+            }}>
+                <img src={IcTon} style={{
+                    width: '16px',
+                    height: '16px'
+                }}/>
+                <span style={{
+                    color: 'white',
+                    fontFamily: 'UbuntuBold',
+                    fontSize: '14px'
+                }}>{poolse}</span>
+            </div>
+            <div style={{height: '16px'}}/>
+            <ButtonMain tx={"Внести"} onClick={onClick} onRed={false}/>
         </div>
     )
 }
