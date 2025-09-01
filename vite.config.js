@@ -1,20 +1,7 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-// https://vitejs.dev/config/
-// export default defineConfig({
-//   // base: './',
-//   plugins: [
-//     react(),
-//   ],
-//
-//
-//   build : {
-//     minify : true ,
-//     sourcemap : false ,
-//     target : 'modules' ,
-//   },
-// })
 export default defineConfig({
     base: './',
     plugins: [
@@ -25,7 +12,6 @@ export default defineConfig({
             },
         }),
     ],
-    // base : '/test/front/',
     build: {
         minify: true,
         sourcemap: false,
@@ -35,5 +21,10 @@ export default defineConfig({
         headers: {
             'Cache-Control': 'no-store',
         },
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: ['./src/test/setup.ts'],
     },
 });
