@@ -33,7 +33,7 @@ export interface UsersImproveItem {
 }
 
 
-export const getImproveResultUserItem = async (userCustomId: number): Promise<UsersImproveItem[] | string> => {2
+export const getImproveResultUserItem = async (userCustomId: number): Promise<UsersImproveItem[] | string> => {
     try {
     console.log("userCustomId - ", userCustomId)
         const response = await axios.post<UsersImproveItem[]>(

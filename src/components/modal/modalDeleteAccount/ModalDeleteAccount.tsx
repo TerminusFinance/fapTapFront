@@ -166,7 +166,7 @@ export const ModalDeleteAccount: React.FC<ModalInviteProps> = ({
                             marginTop: '8px'
                         }}
                     >
-                        Are you sure you want to delete your account? This action cannot be
+                        Are you sure you want to delete your account? This action cannot be
                         undone!
                     </p>
 
